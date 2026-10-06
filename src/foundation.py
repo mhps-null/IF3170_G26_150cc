@@ -124,7 +124,7 @@ class State:
     # Neighbor Generation
     def generate_neighbors(self, truck: Truck, package_catalog: Dict[str, Package], max_shift: int = 2, sample_size: int = None) -> List['State']:
         """
-        Generating valid neighbor states (Move, Swap, Rotate)
+        Generating valid neighbor states (Move, Swap, Rotate, Insert)
         sample_size: jika diset, ambil random sample dari kandidat neighbor sebelum divalidasi.
         """
         candidates = []
@@ -168,6 +168,20 @@ class State:
                 for ori in possible_orientations:
                     if ori != pos.orientation:
                         candidates.append(('rotate', pkg_id, pos.x, pos.y, pos.z, ori))
+            else:
+                # INSERT
+                # Generate candidates to place an outside package into the truck
+                pkg = package_catalog[pkg_id]
+                z_list = list(valid_z)
+                for _ in range(20):
+                    ori = random.choice(possible_orientations)
+                    ex, ey, ez = PackagePlacement(0, 0, 0, ori).get_effective_dimensions(pkg)
+                    if ex > truck.w or ey > truck.l:
+                        continue
+                    nx = random.randint(0, truck.w - ex)
+                    ny = random.randint(0, truck.l - ey)
+                    nz = random.choice(z_list)
+                    candidates.append(('insert', pkg_id, nx, ny, nz, ori))
                         
         if sample_size and len(candidates) > sample_size:
             candidates = random.sample(candidates, sample_size)
@@ -185,6 +199,9 @@ class State:
             elif instruction[0] == 'rotate':
                 _, pkg_id, x, y, z, ori = instruction
                 new_p[pkg_id] = PackagePlacement(x=x, y=y, z=z, orientation=ori)
+            elif instruction[0] == 'insert':
+                _, pkg_id, nx, ny, nz, ori = instruction
+                new_p[pkg_id] = PackagePlacement(x=nx, y=ny, z=nz, orientation=ori)
                 
             new_state = State(placements=new_p)
             if new_state.is_valid(truck, package_catalog):
