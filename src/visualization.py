@@ -3,8 +3,7 @@ from typing import Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from foundation import Package, State, Truck
-
+from src.foundation import Package, State, Truck
 
 # ---------- helper ----------
 def _box_faces(x, y, z, dx, dy, dz):

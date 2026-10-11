@@ -11,10 +11,10 @@ import json
 import os
 import random
 
-import visualization as viz
-from foundation import generate_random_state, parse_input
-from objectives import OBJECTIVES
-from simulated_annealing import SimulatedAnnealing, suggest_t0
+from src import visualization as viz
+from src.foundation import generate_random_state, parse_input
+from src.SA.objectives import OBJECTIVES
+from src.SA.simulated_annealing import SimulatedAnnealing, suggest_t0
 
 
 def placements_to_dict(state):

@@ -1,6 +1,6 @@
 # Bonus 1 : objective function alternatif
 from typing import Callable, Dict
-from foundation import Package, State
+from src.foundation import Package, State
 
 ObjectiveFn = Callable[[State], float]
 

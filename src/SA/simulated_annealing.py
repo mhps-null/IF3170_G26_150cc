@@ -10,7 +10,7 @@ import time
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Tuple
 
-from foundation import Package, PackagePlacement, State, Truck, generate_random_state
+from src.foundation import Package, PackagePlacement, State, Truck, generate_random_state
 
 ORIENTATIONS = [
     ('w', 'l', 'h'), ('w', 'h', 'l'),
