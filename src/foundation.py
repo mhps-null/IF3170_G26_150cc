@@ -26,10 +26,6 @@ class Truck:
 def get_90deg_rotations(orientation: Tuple[str, str, str]) -> List[Tuple[str, str, str]]:
     """
     Generate 3 orientations resulting from a 90-degree rotation around a single axis (x, y, or z).
-    From (w, l, h):
-    - z-axis (xy-plane rotation): (l, w, h)
-    - x-axis (yz-plane rotation): (w, h, l)
-    - y-axis (xz-plane rotation): (h, l, w)
     """
     ox, oy, oz = orientation
     return [
@@ -119,7 +115,6 @@ class State:
                 has_valid_support = False
                 for p2 in placed:
                     if p1['id'] != p2['id']:
-                        # If p2's top is exactly at p1's bottom
                         if p2['z2'] == p1['z1']:
                             # Check 2D base intersection
                             overlap_x = max(p1['x1'], p2['x1']) < min(p1['x2'], p2['x2'])
@@ -147,14 +142,9 @@ class State:
         max_sample_attempts: int = 100
     ) -> List['State']:
         """
-        Generate valid neighbor states (Move, Swap, Rotate, Insert).
-        
-        - If sample_size is specified (used by Stochastic Hill-Climbing):
-          Generates random neighbor samples directly on-the-fly with balanced action
-          types (swap, move, rotate, insert) without building the full candidate list in memory.
-        - If sample_size is None (used by Steepest Ascent and Sideways Move):
-          Generates all candidate swaps, moves, single-axis 90° rotations, and candidate
-          insert positions (up to insert_tries per outside package).
+        if `sample_size` is given (Stochastic HC), samples actions randomly, 
+        otherwise (Steepest Ascent / Sideways Move), exhaustively enumerates all swaps, moves, 
+        single-axis 90° rotations, and up to `insert_tries` insert candidates per outside package.
         """
         keys = list(self.placements.keys())
         inside_keys = [k for k in keys if self.placements[k] is not None]
@@ -175,9 +165,7 @@ class State:
             ('h', 'w', 'l'), ('h', 'l', 'w')
         ]
 
-        # -------------------------------------------------------------
-        # Branch 1: On-the-fly random sampling (for Stochastic HC)
-        # -------------------------------------------------------------
+        # Random sampling (for Stochastic HC)
         if sample_size is not None:
             available_actions = []
             if len(keys) >= 2 and not (len(inside_keys) == 0 and len(outside_keys) >= 2):
@@ -242,9 +230,7 @@ class State:
 
             return neighbors
 
-        # -------------------------------------------------------------
-        # Branch 2: Exhaustive/semi-exhaustive neighborhood (for Steepest & Sideways)
-        # -------------------------------------------------------------
+        # Exhaustive/semi-exhaustive neighborhood (for Steepest & Sideways)
         candidates = []
         
         # SWAP
@@ -258,18 +244,18 @@ class State:
                 
         for pkg_id in inside_keys:
             pos = self.placements[pkg_id]
-            # MOVE (Change X, Y, Z coordinates locally +/- max_shift units)
+            # MOVE 
             for nx in range(max(0, pos.x - max_shift), min(truck.w, pos.x + max_shift + 1)):
                 for ny in range(max(0, pos.y - max_shift), min(truck.l, pos.y + max_shift + 1)):
                     for nz in valid_z:
                         if nx != pos.x or ny != pos.y or nz != pos.z:
                             candidates.append(('move', pkg_id, nx, ny, nz, pos.orientation))
                             
-            # ROTATE (90-degree rotation around a single axis: x, y, or z)
+            # ROTATE
             for ori in get_90deg_rotations(pos.orientation):
                 candidates.append(('rotate', pkg_id, pos.x, pos.y, pos.z, ori))
 
-        # INSERT (Sample without full grid enumeration, with deduplication)
+        # INSERT
         for pkg_id in outside_keys:
             pkg = package_catalog[pkg_id]
             seen_inserts = set()
@@ -318,7 +304,6 @@ def generate_random_state(truck: Truck, package_catalog: Dict[str, Package]) -> 
     
     initial_state = State(placements=placements)
     
-    # Get package ids and shuffle them
     all_pkg_ids = list(package_catalog.keys())
     random.shuffle(all_pkg_ids)
     

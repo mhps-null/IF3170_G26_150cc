@@ -28,7 +28,7 @@ Algoritma yang diimplementasikan:
 │   ├── visualization.py   # Visualisasi 3D state truk dan plot perbandingan eksperimen
 │   ├── HC/                # Hill-Climbing (Steepest, Sideways, Restart, Stochastic) & runner
 │   ├── SA/                # Simulated Annealing, visualisasi, objective bonus, runner
-│   └── ...                # Genetic Algorithm
+│   └── GA/                # Genetic Algorithm
 └── README.md
 ```
 
@@ -61,7 +61,9 @@ File JSON di folder `input/`:
 
 ## Cara Menjalankan
 
-Jalankan dari folder `src/`.
+Program dapat dijalankan dari folder `src/` (rekomendasi) atau langsung dari root repositori.
+
+### Jalankan dari folder `src/` (Rekomendasi)
 
 **Hill-Climbing**
 
@@ -127,6 +129,34 @@ Hasil tiap run disimpan di `output/sa_<objective>/`:
 python <path_ke_runner> ../input/<nama_file>.json
 ```
 
+### Alternatif: Jalankan dari Root Proyek
+
+Program juga dapat dijalankan langsung dari root repositori menggunakan modul Python (`-m`):
+
+```bash
+# Menjalankan Hill-Climbing dari root:
+python -m src.HC.run_hc input/<nama_file>.json --variant all --runs 3 --out output
+
+# Menjalankan Simulated Annealing dari root:
+python -m src.SA.run_sa input/<nama_file>.json --runs 3 --out output
+```
+
+## Catatan Implementasi Fondasi
+
+Modul `src/foundation.py` memuat representasi objek dasar (`Truck`, `Package`, `PackagePlacement`, `State`), validasi batasan fisik, parsing file input JSON, dan fungsi pembangkitan tetangga (*neighbor generation*):
+
+- **Validasi State** (`State.is_valid`):
+  - *Dimensi*: Semua paket berada di dalam ruang kontainer truk ($x+w \le W$, $y+l \le L$, $z+h \le H$).
+  - *Kapasitas Berat*: Total berat paket terangkut tidak melampaui `maxCapacity` truk.
+  - *Overlap*: Tidak ada dua paket atau lebih yang saling tumpang tindih dalam ruang 3D.
+  - *Penopang Fisik*: Paket tidak boleh melayang; setiap paket harus bertumpu pada lantai kontainer ($z=0$) atau tepat di atas permukaan atas paket lain.
+  - *Proteksi Fragile*: Paket bertanda `is_fragile = true` tidak boleh menjadi penopang bagi paket lain di atasnya.
+- **Operator Tetangga** (`State.generate_neighbors`):
+  - **MOVE**: Menggeser posisi paket di dalam truk secara lokal ($\pm$ `max_shift` unit pada koordinat $x$ dan $y$, serta menempatkannya pada tingkat ketinggian $z$ penopang yang valid).
+  - **SWAP**: Menukar posisi koordinat dan orientasi antara dua paket.
+  - **ROTATE**: Rotasi $90^\circ$ terhadap satu sumbu ($x, y,$ atau $z$). Dari orientasi $(w, l, h)$ hanya menghasilkan 3 kemungkinan orientasi: $(l, w, h)$, $(w, h, l)$, atau $(h, l, w)$.
+  - **INSERT**: Menempatkan paket dari luar truk ke dalam kontainer dengan memilih orientasi acak dan posisi $(x, y, z)$ yang bertumpu pada lantai atau paket lain (`support levels`).
+
 ## Catatan Implementasi Hill-Climbing
 
 - **Steepest Ascent**: Mengevaluasi kandidat tetangga deterministik (swap, move, rotasi 90°) serta sampling operator INSERT (`insert_tries=50` per paket luar). Memilih tetangga dengan peningkatan nilai tertinggi. Jika tidak ditemukan tetangga yang meningkatkan nilai (termasuk saat daftar tetangga terisi namun bernilai $\le$ state saat ini), algoritma melakukan resampling hingga 3 kali (`max_resamples=3`) untuk mengundi ulang kombinasi penempatan INSERT. Pencarian berhenti jika setelah resampling tidak ditemukan peningkatan, tanpa menjamin optimum lokal terhadap seluruh kemungkinan penempatan.
@@ -145,6 +175,6 @@ python <path_ke_runner> ../input/<nama_file>.json
 
 | Anggota | NIM | Tugas |
 |---|---|---|
-| _Nathan Adhika S_ | _13524041_ | Fondasi (objective function, validasi, neighbor, input parser) dan Hill-Climbing (semua varian) |
-| _Muhammad Haris P S_ | _13524053_ | Simulated Annealing, visualisasi, dan Bonus 1 (objective function alternatif) |
-| _M Iqbal Raihan_ | _NIM_ | Genetic Algorithm dan Bonus 3 |
+| Nathan Adhika S | 13524041 | Fondasi (objective function, validasi, neighbor, input parser) dan Hill-Climbing (semua varian) |
+| Muhammad Haris P S | 13524053 | Simulated Annealing, visualisasi, dan Bonus 1 (objective function alternatif) |
+| M Iqbal Raihan | 13524011 | Genetic Algorithm dan Bonus 3 |

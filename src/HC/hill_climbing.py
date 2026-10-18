@@ -20,16 +20,8 @@ class HillClimbing:
         max_resamples: int = 3
     ) -> Tuple[State, State, int, float, List[int]]:
         """
-        Steepest Ascent Hill-Climbing with candidate INSERT sampling.
-        
-        Documentation & Theoretical Limitations:
-        - INSERT candidates are generated via random sampling of `insert_tries` per package
-          outside the truck (avoiding exhaustive container coordinate grid enumeration for computational efficiency).
-        - If in any iteration all generated neighbors have value <= current_value, the algorithm
-          attempts resampling up to `max_resamples` times to ensure no viable placement spot
-          was missed due to unlucky random sampling.
-        - Consequently, termination does NOT guarantee finding an absolute local optimum
-          over all possible container placement combinations.
+        Steepest Ascent HC with random INSERT sampling (not exhaustive), retries up to `max_resamples`
+        if no improvement found which the local optimum not guaranteed.
         """
         start_time = time.perf_counter()
         current_state = initial_state if initial_state else generate_random_state(self.truck, self.catalog)
@@ -85,21 +77,8 @@ class HillClimbing:
         max_resamples: int = 3
     ) -> Tuple[State, State, int, float, List[int]]:
         """
-        Hill-Climbing with Sideways Move.
-        
-        Allows the search to move to a neighbor with the same objective value (plateau)
-        up to a max_sideways limit. The search terminates immediately once the number of
-        sideways moves reaches max_sideways.
-        
-        Sideways Counter Explanation (consecutive vs cumulative):
-        - consecutive = True (AIMA standard / consecutive moves):
-          sideways_count counts consecutive moves on a plateau. If a strictly better neighbor
-          is found (best_value > current_value), sideways_count resets to 0.
-        - consecutive = False (cumulative / total):
-          sideways_count counts the total sideways moves across the entire search without resetting.
-        
-        In both modes, as soon as the max_sideways-th sideways move is executed,
-        the search terminates IMMEDIATELY (does not continue to the next iteration).
+        HC with Sideways Move, up to `max_sideways` plateau moves, terminating immediately at the limit.
+        When`consecutive=True` resets the counter on improvement, `consecutive=False` counts cumulatively.
         """
         if max_sideways < 0:
             raise ValueError(f"max_sideways cannot be negative, got: {max_sideways}")
@@ -218,12 +197,7 @@ class HillClimbing:
         max_sample_attempts: int = 100
     ) -> Tuple[State, State, int, float, List[int]]:
         """
-        Stochastic Hill-Climbing
-        
-        Generates random neighbor samples directly on-the-fly without building
-        the full candidate list in memory. Action type probabilities (swap, move, rotate, insert)
-        are balanced so samples are not dominated by move and rotate which have Delta = 0.
-        Randomly picks among strictly better neighbors.
+        Samples neighbors immediately with balanced action type probabilities, then picks randomly among strictly better neighbors.
         """
         start_time = time.perf_counter()
         current_state = initial_state if initial_state else generate_random_state(self.truck, self.catalog)
