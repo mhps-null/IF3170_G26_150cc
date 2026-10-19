@@ -27,27 +27,68 @@ def _finish(fig, save_path: Optional[str], show: bool):
         plt.close(fig)
 
 
-def _info_text(state: State, truck: Truck, catalog: Dict[str, Package], max_outside: int = 14) -> str:
-    inside = [p for p, pos in state.placements.items() if pos is not None]
-    outside = [p for p, pos in state.placements.items() if pos is None]
-    weight = sum(catalog[p].weight for p in inside)
+def _outside_count(state: State) -> int:
+    return sum(
+        pos is None
+        for pos in state.placements.values()
+    )
+
+
+def _info_text(
+    state: State,
+    truck: Truck,
+    catalog: Dict[str, Package],
+) -> str:
+    inside = [
+        pid for pid, pos in state.placements.items()
+        if pos is not None
+    ]
+    outside = sorted(
+        pid for pid, pos in state.placements.items()
+        if pos is None
+    )
+
+    total_weight = sum(
+        catalog[pid].weight for pid in inside
+    )
+
     lines = [
         f"Value total : {state.get_objective_value(catalog)}",
-        f"Berat       : {weight} / {truck.maxCapacity}",
+        f"Berat       : {total_weight} / {truck.maxCapacity}",
         f"Di dalam    : {len(inside)} paket",
         f"Di luar     : {len(outside)} paket",
         f"Peti kemas  : {truck.w} x {truck.l} x {truck.h}",
-        "(garis merah tebal = fragile)",
+        "Garis merah tebal = paket fragile",
         "",
-        "Paket di luar (id: WxLxH value berat):",
+        "DETAIL SELURUH PAKET DI LUAR TRUK",
     ]
-    for pid in outside[:max_outside]:
-        p = catalog[pid]
-        lines.append(f" {pid}: {p.w}x{p.l}x{p.h} v={p.value} b={p.weight}{' F' if p.is_fragile else ''}")
-    if len(outside) > max_outside:
-        lines.append(f" ... +{len(outside) - max_outside} lainnya")
+
+    if not outside:
+        lines.append("Tidak ada paket di luar truk.")
+        return "\n".join(lines)
+
+    lines.append(
+        "ID     Dimensi   Value  Berat  ETA  Fragile"
+    )
+
+    for pid in outside:
+        pkg = catalog[pid]
+        fragile = "YA" if pkg.is_fragile else "tidak"
+
+        lines.append(
+            f"{pid:<6} "
+            f"{pkg.w}x{pkg.l}x{pkg.h:<2} "
+            f"{pkg.value:>5} "
+            f"{pkg.weight:>6} "
+            f"{pkg.eta:>4} "
+            f"{fragile}"
+        )
+
     return "\n".join(lines)
 
+def _info_panel_height(max_outside: int) -> float:
+    """Estimasi tinggi panel informasi berdasarkan jumlah paket luar."""
+    return max(2.8, (max_outside + 8) * 0.16)
 
 # ---------- state / truk ----------
 def draw_state(ax, state: State, truck: Truck, catalog: Dict[str, Package], title: str = ""):
@@ -71,28 +112,105 @@ def draw_state(ax, state: State, truck: Truck, catalog: Dict[str, Package], titl
     ax.set_title(title)
 
 
-def plot_state(state: State, truck: Truck, catalog: Dict[str, Package], title: str = "State",
-               save_path: Optional[str] = None, show: bool = False):
-    fig = plt.figure(figsize=(11, 6))
-    gs = fig.add_gridspec(1, 2, width_ratios=[2.2, 1])
-    draw_state(fig.add_subplot(gs[0], projection="3d"), state, truck, catalog, title)
-    axt = fig.add_subplot(gs[1]); axt.axis("off")
-    axt.text(0, 1, _info_text(state, truck, catalog), va="top", family="monospace", fontsize=8)
+def plot_state(
+    state: State,
+    truck: Truck,
+    catalog: Dict[str, Package],
+    title: str = "State",
+    save_path: Optional[str] = None,
+    show: bool = False,
+):
+    info_height = _info_panel_height(_outside_count(state))
+    fig_height = max(7.0, 2.0 + info_height)
+
+    fig = plt.figure(figsize=(15, fig_height))
+    gs = fig.add_gridspec(
+        1,
+        2,
+        width_ratios=[2.0, 1.7],
+    )
+
+    draw_state(
+        fig.add_subplot(gs[0], projection="3d"),
+        state,
+        truck,
+        catalog,
+        title,
+    )
+
+    axt = fig.add_subplot(gs[1])
+    axt.axis("off")
+    axt.text(
+        0,
+        1,
+        _info_text(state, truck, catalog),
+        va="top",
+        family="monospace",
+        fontsize=7.2,
+        linespacing=1.15,
+    )
+
     _finish(fig, save_path, show)
     return fig
 
 
-def plot_initial_final(start: State, final: State, truck: Truck, catalog: Dict[str, Package],
-                       suptitle: str = "", save_path: Optional[str] = None, show: bool = False):
-    fig = plt.figure(figsize=(15, 9))
-    gs = fig.add_gridspec(2, 2, height_ratios=[3, 1.3])
-    draw_state(fig.add_subplot(gs[0, 0], projection="3d"), start, truck, catalog, "State Awal")
-    draw_state(fig.add_subplot(gs[0, 1], projection="3d"), final, truck, catalog, "State Akhir")
-    for col, st in enumerate((start, final)):
-        axt = fig.add_subplot(gs[1, col]); axt.axis("off")
-        axt.text(0, 1, _info_text(st, truck, catalog), va="top", family="monospace", fontsize=8)
+def plot_initial_final(
+    start: State,
+    final: State,
+    truck: Truck,
+    catalog: Dict[str, Package],
+    suptitle: str = "",
+    save_path: Optional[str] = None,
+    show: bool = False,
+):
+    max_outside = max(
+        _outside_count(start),
+        _outside_count(final),
+    )
+
+    top_height = 6.0
+    info_height = _info_panel_height(max_outside)
+
+    fig = plt.figure(
+        figsize=(15, top_height + info_height)
+    )
+    gs = fig.add_gridspec(
+        2,
+        2,
+        height_ratios=[top_height, info_height],
+    )
+
+    draw_state(
+        fig.add_subplot(gs[0, 0], projection="3d"),
+        start,
+        truck,
+        catalog,
+        "State Awal",
+    )
+    draw_state(
+        fig.add_subplot(gs[0, 1], projection="3d"),
+        final,
+        truck,
+        catalog,
+        "State Akhir",
+    )
+
+    for col, state in enumerate((start, final)):
+        axt = fig.add_subplot(gs[1, col])
+        axt.axis("off")
+        axt.text(
+            0,
+            1,
+            _info_text(state, truck, catalog),
+            va="top",
+            family="monospace",
+            fontsize=7.2,
+            linespacing=1.15,
+        )
+
     if suptitle:
         fig.suptitle(suptitle)
+
     _finish(fig, save_path, show)
     return fig
 

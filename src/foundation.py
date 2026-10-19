@@ -73,6 +73,33 @@ class State:
     
     # Constraint Checking
     def is_valid(self, truck: Truck, package_catalog: Dict[str, Package]) -> bool:
+        # Representasi harus mencakup semua paket, tanpa ID asing.
+        if set(self.placements) != set(package_catalog):
+            return False
+        
+        for pkg_id, pos in self.placements.items():
+            if pos is None:
+                continue
+            
+            # Koordinat wajib bilangan bulat.
+            if any(
+                type(coord) is not int
+                for coord in (pos.x, pos.y, pos.z)
+            ):
+                return False
+        
+            # Orientasi wajib permutasi valid dari w, l, h.
+            try:
+                orientation = tuple(pos.orientation)
+            except TypeError:
+                return False
+        
+            if (
+                len(orientation) != 3
+                or set(orientation) != {"w", "l", "h"}
+            ):
+                return False
+    
         placed = []
         total_weight = 0
         
