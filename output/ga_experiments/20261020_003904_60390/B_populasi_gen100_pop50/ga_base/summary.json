@@ -1,20 +1,20 @@
 {
   "params": {
     "objective": "base",
-    "population_size": 30,
+    "population_size": 50,
     "mutation_rate": 0.01,
-    "max_generations": 20,
+    "max_generations": 100,
     "seed": 42
   },
   "runs": [
     {
       "run": 1,
-      "population_size": 30,
-      "iterations": 20,
-      "duration_s": 0.128,
+      "population_size": 50,
+      "iterations": 100,
+      "duration_s": 1.199,
       "initial_base_value": 1147,
-      "final_objective": 1147.0,
-      "final_base_value": 1147,
+      "final_objective": 1455.0,
+      "final_base_value": 1455,
       "initial_state": {
         "P01": null,
         "P02": {
@@ -201,42 +201,50 @@
             "h"
           ]
         },
-        "P10": null,
-        "P11": {
+        "P10": {
+          "x": 4,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ]
+        },
+        "P11": null,
+        "P12": {
+          "x": 0,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ]
+        },
+        "P13": {
+          "x": 5,
+          "y": 9,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ]
+        },
+        "P14": {
           "x": 1,
           "y": 8,
           "z": 0,
           "orientation": [
-            "h",
-            "l",
-            "w"
-          ]
-        },
-        "P12": null,
-        "P13": {
-          "x": 0,
-          "y": 1,
-          "z": 0,
-          "orientation": [
-            "l",
             "w",
-            "h"
-          ]
-        },
-        "P14": null,
-        "P15": {
-          "x": 4,
-          "y": 8,
-          "z": 0,
-          "orientation": [
             "h",
-            "l",
-            "w"
+            "l"
           ]
         },
-        "P16": {
-          "x": 0,
-          "y": 6,
+        "P15": {
+          "x": 5,
+          "y": 5,
           "z": 0,
           "orientation": [
             "h",
@@ -244,6 +252,7 @@
             "l"
           ]
         },
+        "P16": null,
         "P17": null,
         "P18": null,
         "P19": {
@@ -273,19 +282,28 @@
         },
         "P26": null,
         "P27": null,
-        "P28": null,
+        "P28": {
+          "x": 7,
+          "y": 1,
+          "z": 3,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ]
+        },
         "P29": null,
         "P30": null
       }
     },
     {
       "run": 2,
-      "population_size": 30,
-      "iterations": 20,
-      "duration_s": 0.12,
+      "population_size": 50,
+      "iterations": 100,
+      "duration_s": 0.945,
       "initial_base_value": 993,
-      "final_objective": 1121.0,
-      "final_base_value": 1121,
+      "final_objective": 1290.0,
+      "final_base_value": 1290,
       "initial_state": {
         "P01": null,
         "P02": {
@@ -430,30 +448,39 @@
           ]
         },
         "P03": {
-          "x": 5,
-          "y": 7,
-          "z": 0,
+          "x": 8,
+          "y": 8,
+          "z": 3,
           "orientation": [
-            "w",
             "l",
+            "w",
             "h"
           ]
         },
-        "P04": {
-          "x": 2,
-          "y": 13,
+        "P04": null,
+        "P05": {
+          "x": 6,
+          "y": 8,
           "z": 0,
           "orientation": [
-            "l",
             "h",
-            "w"
+            "w",
+            "l"
           ]
         },
-        "P05": null,
         "P06": null,
         "P07": null,
         "P08": null,
-        "P09": null,
+        "P09": {
+          "x": 5,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ]
+        },
         "P10": {
           "x": 0,
           "y": 12,
@@ -516,9 +543,25 @@
           ]
         },
         "P17": null,
-        "P18": {
-          "x": 5,
-          "y": 3,
+        "P18": null,
+        "P19": null,
+        "P20": null,
+        "P21": null,
+        "P22": {
+          "x": 1,
+          "y": 17,
+          "z": 3,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ]
+        },
+        "P23": null,
+        "P24": null,
+        "P25": {
+          "x": 1,
+          "y": 13,
           "z": 0,
           "orientation": [
             "h",
@@ -526,52 +569,27 @@
             "l"
           ]
         },
-        "P19": null,
-        "P20": null,
-        "P21": null,
-        "P22": null,
-        "P23": null,
-        "P24": null,
-        "P25": null,
         "P26": null,
         "P27": null,
-        "P28": {
-          "x": 0,
-          "y": 14,
-          "z": 0,
-          "orientation": [
-            "w",
-            "l",
-            "h"
-          ]
-        },
+        "P28": null,
         "P29": null,
         "P30": null
       }
     },
     {
       "run": 3,
-      "population_size": 30,
-      "iterations": 20,
-      "duration_s": 0.135,
-      "initial_base_value": 960,
-      "final_objective": 1181.0,
-      "final_base_value": 1181,
+      "population_size": 50,
+      "iterations": 100,
+      "duration_s": 1.19,
+      "initial_base_value": 980,
+      "final_objective": 1416.0,
+      "final_base_value": 1416,
       "initial_state": {
         "P01": null,
-        "P02": {
-          "x": 2,
-          "y": 2,
-          "z": 0,
-          "orientation": [
-            "l",
-            "w",
-            "h"
-          ]
-        },
+        "P02": null,
         "P03": {
-          "x": 7,
-          "y": 18,
+          "x": 4,
+          "y": 10,
           "z": 0,
           "orientation": [
             "h",
@@ -580,22 +598,31 @@
           ]
         },
         "P04": {
-          "x": 0,
-          "y": 2,
+          "x": 1,
+          "y": 16,
           "z": 0,
           "orientation": [
-            "h",
             "l",
-            "w"
+            "w",
+            "h"
           ]
         },
         "P05": null,
         "P06": null,
-        "P07": null,
+        "P07": {
+          "x": 0,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ]
+        },
         "P08": null,
         "P09": {
-          "x": 5,
-          "y": 10,
+          "x": 7,
+          "y": 16,
           "z": 0,
           "orientation": [
             "l",
@@ -604,53 +631,32 @@
           ]
         },
         "P10": {
-          "x": 0,
-          "y": 10,
-          "z": 0,
-          "orientation": [
-            "h",
-            "w",
-            "l"
-          ]
-        },
-        "P11": {
-          "x": 5,
-          "y": 6,
-          "z": 0,
-          "orientation": [
-            "w",
-            "h",
-            "l"
-          ]
-        },
-        "P12": null,
-        "P13": null,
-        "P14": null,
-        "P15": null,
-        "P16": {
-          "x": 6,
-          "y": 14,
-          "z": 0,
-          "orientation": [
-            "h",
-            "w",
-            "l"
-          ]
-        },
-        "P17": {
           "x": 1,
           "y": 9,
           "z": 0,
           "orientation": [
             "h",
-            "l",
-            "w"
+            "w",
+            "l"
           ]
         },
-        "P18": null,
-        "P19": {
+        "P11": null,
+        "P12": null,
+        "P13": null,
+        "P14": null,
+        "P15": {
+          "x": 4,
+          "y": 7,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ]
+        },
+        "P16": {
           "x": 2,
-          "y": 17,
+          "y": 3,
           "z": 0,
           "orientation": [
             "l",
@@ -658,15 +664,45 @@
             "h"
           ]
         },
+        "P17": null,
+        "P18": null,
+        "P19": {
+          "x": 2,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ]
+        },
         "P20": null,
         "P21": null,
         "P22": null,
         "P23": null,
-        "P24": null,
+        "P24": {
+          "x": 6,
+          "y": 8,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ]
+        },
         "P25": null,
         "P26": null,
         "P27": null,
-        "P28": null,
+        "P28": {
+          "x": 4,
+          "y": 19,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ]
+        },
         "P29": null,
         "P30": null
       },
@@ -683,8 +719,8 @@
           ]
         },
         "P03": {
-          "x": 7,
-          "y": 18,
+          "x": 4,
+          "y": 10,
           "z": 0,
           "orientation": [
             "h",
@@ -693,22 +729,31 @@
           ]
         },
         "P04": {
-          "x": 0,
-          "y": 2,
+          "x": 1,
+          "y": 16,
           "z": 0,
           "orientation": [
-            "h",
             "l",
-            "w"
+            "w",
+            "h"
           ]
         },
         "P05": null,
         "P06": null,
-        "P07": null,
+        "P07": {
+          "x": 0,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ]
+        },
         "P08": null,
         "P09": {
-          "x": 5,
-          "y": 10,
+          "x": 7,
+          "y": 16,
           "z": 0,
           "orientation": [
             "l",
@@ -717,8 +762,8 @@
           ]
         },
         "P10": {
-          "x": 0,
-          "y": 10,
+          "x": 1,
+          "y": 9,
           "z": 0,
           "orientation": [
             "h",
@@ -739,16 +784,25 @@
         "P12": null,
         "P13": null,
         "P14": {
-          "x": 3,
-          "y": 15,
-          "z": 3,
+          "x": 4,
+          "y": 13,
+          "z": 1,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ]
+        },
+        "P15": {
+          "x": 4,
+          "y": 7,
+          "z": 0,
           "orientation": [
             "w",
             "h",
             "l"
           ]
         },
-        "P15": null,
         "P16": {
           "x": 6,
           "y": 14,
@@ -759,9 +813,10 @@
             "l"
           ]
         },
-        "P17": {
-          "x": 1,
-          "y": 9,
+        "P17": null,
+        "P18": {
+          "x": 6,
+          "y": 8,
           "z": 0,
           "orientation": [
             "h",
@@ -769,15 +824,14 @@
             "w"
           ]
         },
-        "P18": null,
         "P19": {
-          "x": 2,
-          "y": 17,
+          "x": 7,
+          "y": 11,
           "z": 0,
           "orientation": [
-            "l",
+            "h",
             "w",
-            "h"
+            "l"
           ]
         },
         "P20": null,
@@ -788,7 +842,16 @@
         "P25": null,
         "P26": null,
         "P27": null,
-        "P28": null,
+        "P28": {
+          "x": 4,
+          "y": 19,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ]
+        },
         "P29": {
           "x": 2,
           "y": 0,

@@ -33,6 +33,7 @@ class HillClimbing:
         resample_count = 0
         
         while True:
+            iterations += 1
             neighbors = current_state.generate_neighbors(
                 self.truck,
                 self.catalog,
@@ -41,6 +42,8 @@ class HillClimbing:
             )
             
             if not neighbors:
+                history.append(current_value)
+
                 if resample_count < max_resamples:
                     resample_count += 1
                     continue
@@ -52,6 +55,7 @@ class HillClimbing:
             best_neighbor = random.choice(best_neighbors)
             
             if best_value <= current_value:
+                history.append(current_value)
                 # Try resampling before deciding to stop
                 if resample_count < max_resamples:
                     resample_count += 1
@@ -63,7 +67,6 @@ class HillClimbing:
             current_state = best_neighbor
             current_value = best_value
             history.append(current_value)
-            iterations += 1
             
         duration = time.perf_counter() - start_time
         return current_state, start_state, iterations, duration, history
@@ -94,9 +97,7 @@ class HillClimbing:
         resample_count = 0
         
         while True:
-            if max_sideways == 0 and sideways_count >= max_sideways:
-                break
-
+            iterations += 1
             neighbors = current_state.generate_neighbors(
                 self.truck,
                 self.catalog,
@@ -105,6 +106,8 @@ class HillClimbing:
             )
             
             if not neighbors:
+                history.append(current_value)
+
                 if resample_count < max_resamples:
                     resample_count += 1
                     continue
@@ -116,6 +119,8 @@ class HillClimbing:
             best_neighbor = random.choice(best_neighbors)
             
             if best_value < current_value:
+                history.append(current_value)
+
                 if resample_count < max_resamples:
                     resample_count += 1
                     continue
@@ -123,6 +128,7 @@ class HillClimbing:
                 
             elif best_value == current_value:
                 if sideways_count >= max_sideways:
+                    history.append(current_value)
                     break
                 sideways_count += 1
                 is_sideways = True
@@ -135,7 +141,6 @@ class HillClimbing:
             current_state = best_neighbor
             current_value = best_value
             history.append(current_value)
-            iterations += 1
 
             # Terminate immediately once the max_sideways move limit is reached
             if is_sideways and sideways_count >= max_sideways:
@@ -209,6 +214,7 @@ class HillClimbing:
         no_improve = 0
         
         while no_improve < max_no_improve:
+            iterations += 1
             # Generate neighbors directly on-the-fly with balanced action types
             neighbors = current_state.generate_neighbors(
                 self.truck,
@@ -222,12 +228,12 @@ class HillClimbing:
             
             if not better_neighbors:
                 no_improve += 1
+                history.append(current_value)
                 continue 
         
             current_state = random.choice(better_neighbors)
             current_value = current_state.get_objective_value(self.catalog)
             history.append(current_value)
-            iterations += 1
             no_improve = 0
             
         duration = time.perf_counter() - start_time

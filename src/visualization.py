@@ -119,7 +119,10 @@ def plot_sa_prob(prob_histories: Dict[str, List[Tuple[int, float]]],
         if pts:
             ax.scatter([i for i, _ in pts], [p for _, p in pts], s=4, alpha=0.5, label=label)
     ax.set_xlabel("Iterasi"); ax.set_ylabel("e^(dE/T)"); ax.set_ylim(0, 1.02)
-    ax.set_title(title); ax.grid(alpha=0.3); ax.legend(markerscale=3)
+    ax.set_title(title); ax.grid(alpha=0.3);
+    handles, labels = ax.get_legend_handles_labels()
+    if handles:
+        ax.legend(handles, labels, markerscale=3)
     _finish(fig, save_path, show)
     return fig
 

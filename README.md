@@ -61,84 +61,150 @@ File JSON di folder `input/`:
 
 ## Cara Menjalankan
 
-Program dapat dijalankan dari folder `src/` (rekomendasi) atau langsung dari root repositori.
+**Jalankan semua perintah dari root repository**
 
-### Jalankan dari folder `src/` (Rekomendasi)
+Gunakan `input/sample_input.json` sebagai contoh input; ganti dengan path JSON lain jika diperlukan.
 
-**Hill-Climbing**
+### Hill-Climbing
 
 ```bash
-# Menjalankan semua varian sekaligus (3 runs per varian)
-python HC/run_hc.py ../input/<nama_file>.json --variant all --runs 3 --out ../output
+# Jalankan semua varian, 3 run per varian
+python -m src.HC.run_hc input/sample_input.json --variant all --runs 3 --out output
 
-# Menjalankan varian tertentu
-python HC/run_hc.py ../input/<nama_file>.json --variant steepest --runs 3 --out ../output
-python HC/run_hc.py ../input/<nama_file>.json --variant sideways --runs 3 --out ../output
-python HC/run_hc.py ../input/<nama_file>.json --variant restart --runs 3 --out ../output
-python HC/run_hc.py ../input/<nama_file>.json --variant stochastic --runs 3 --out ../output
+# Jalankan satu varian tertentu
+python -m src.HC.run_hc input/sample_input.json --variant steepest --runs 3 --out output
+python -m src.HC.run_hc input/sample_input.json --variant sideways --runs 3 --out output
+python -m src.HC.run_hc input/sample_input.json --variant restart --runs 3 --out output
+python -m src.HC.run_hc input/sample_input.json --variant stochastic --runs 3 --out output
 ```
 
 | Opsi | Default | Keterangan |
 |---|---|---|
-| `--variant` | `all` | Pilihan varian: `steepest`, `sideways`, `restart`, `stochastic`, atau `all` |
-| `--runs` | 3 | Jumlah run / percobaan per varian |
-| `--seed` | 42 | Seed acak agar hasil dapat direproduksi |
-| `--out` | `../output` | Direktori output untuk menyimpan gambar dan ringkasan |
-| `--insert-tries` | 50 | Jumlah percobaan sampling posisi penempatan INSERT per paket luar |
-| `--max-sideways` | 50 | Batas sideways move (untuk Sideways Move) |
-| `--cumulative` | False | Mode sideways kumulatif (default: consecutive / reset saat nilai naik) |
-| `--max-restart` | 3 | Batas restart (untuk Random Restart) |
-| `--sample-size` | 15 | Jumlah sampel tetangga per iterasi (untuk Stochastic HC) |
-| `--max-no-improve` | 50 | Batas toleransi tanpa perbaikan (untuk Stochastic HC) |
-| `--show` | – | Tampilkan jendela plot interaktif |
+| `--variant` | `all` | Varian: `steepest`, `sideways`, `restart`, `stochastic`, atau `all` |
+| `--runs` | 3 | Jumlah run per varian |
+| `--seed` | 42 | Seed awal agar eksperimen dapat direproduksi |
+| `--out` | `./output` | Direktori dasar output |
+| `--insert-tries` | 50 | Jumlah percobaan sampling posisi INSERT per paket di luar truk |
+| `--max-sideways` | 50 | Batas sideways move untuk varian `sideways` |
+| `--cumulative` | tidak aktif | Jika diaktifkan, sideways move dihitung kumulatif, bukan hanya berturut-turut |
+| `--max-restart` | 3 | Jumlah restart untuk varian `restart` |
+| `--sample-size` | 15 | Jumlah sampel neighbor per iterasi untuk varian `stochastic` |
+| `--max-no-improve` | 50 | Batas iterasi tanpa peningkatan untuk varian `stochastic` |
+| `--show` | tidak aktif | Tampilkan plot interaktif |
 
-Hasil tiap varian disimpan di `output/hc_<variant>/`:
-- `run<N>_initial_final.png` – visualisasi 3D state awal dan akhir (paket di dalam dan di luar truk, value, berat),
-- `objective_vs_iter.png` – nilai objective function per iterasi,
-- `summary.json` – ringkasan parameter, durasi, iterasi, nilai awal/akhir, dan snapshot penempatan koordinat paket.
-Jika menjalankan `--variant all`, grafik perbandingan nilai akhir antar varian disimpan di `output/hc_comparison/hc_variants_comparison.png`.
+Output HC disimpan di subfolder seperti `output/hc_steepest/`, `output/hc_sideways/`, `output/hc_restart/`, dan `output/hc_stochastic/`. File utamanya adalah gambar state awal/akhir, `objective_vs_iter.png`, serta `summary.json`. Jika `--variant all` digunakan, grafik perbandingan antarvarian juga dibuat.
 
-**Simulated Annealing**
+### Simulated Annealing
 
 ```bash
-python SA/run_sa.py ../input/<nama_file>.json --runs 3 --out ../output
+python -m src.SA.run_sa input/sample_input.json \
+    --runs 3 \
+    --max-iter 20000 \
+    --objective base \
+    --out output
 ```
 
 | Opsi | Default | Keterangan |
 |---|---|---|
-| `--runs` | 3 | jumlah run |
-| `--t0` | rata-rata value paket | suhu awal |
-| `--alpha` | 0.999 | faktor pendinginan (T ← α·T) |
-| `--t-min` | 0.1 | suhu minimum (kondisi berhenti) |
-| `--max-iter` | 20000 | batas iterasi |
-| `--objective` | `base` | `base`, `eta`, atau `light` (objective bonus) |
-| `--seed` | 42 | seed acak agar hasil dapat direproduksi |
-| `--show` | – | tampilkan jendela plot |
+| `--runs` | 3 | Jumlah run |
+| `--t0` | Rata-rata value paket | Temperatur awal |
+| `--alpha` | 0.999 | Faktor pendinginan geometrik, `T ← alpha × T` |
+| `--t-min` | 0.1 | Temperatur minimum; pencarian berhenti jika temperatur tidak lagi di atas nilai ini |
+| `--max-iter` | 20000 | Batas iterasi maksimum |
+| `--objective` | `base` | Objective `base`, `eta`, atau `light` |
+| `--seed` | 42 | Seed awal agar eksperimen dapat direproduksi |
+| `--out` | `./output` | Direktori dasar output |
+| `--show` | tidak aktif | Tampilkan plot interaktif |
 
-Hasil tiap run disimpan di `output/sa_<objective>/`:
+Output SA disimpan di `<direktori-output>/sa_<objective>/`, misalnya `output/sa_base/`. Isinya dapat mencakup visualisasi state awal/akhir, `objective_vs_iter.png`, `summary.json`, dan `sa_probability.png` jika ada kandidat dengan objective lebih rendah yang probabilitas penerimaannya dapat diplot.
 
-- `run<N>_initial_final.png` – visualisasi 3D state awal dan akhir (paket di dalam dan di luar truk, value, berat),
-- `objective_vs_iter.png` – nilai objective function per iterasi,
-- `sa_probability.png` – nilai e^(ΔE/T) per iterasi,
-- `summary.json` – parameter, durasi, jumlah iterasi, frekuensi *stuck*, serta state awal dan akhir.
+Metrik SA perlu dibedakan:
 
-**Genetic Algorithm**
+- `non_improving_iteration_count` / `non_improving_iteration_frequency`: iterasi ketika tidak ditemukan peningkatan objective terhadap state saat ini. Ini indikator stagnasi, **bukan bukti pasti** bahwa state adalah local optimum.
+- `rejected_worse_count`: jumlah kandidat dengan objective lebih rendah yang ditolak.
+- `worse_neighbor_rejection_rate`: kandidat lebih buruk yang ditolak dibagi semua kandidat lebih buruk (ditolak + diterima). Jika tidak ada kandidat lebih buruk, nilainya `null` / `N/A`.
+- `accepted_worse`: jumlah kandidat lebih buruk yang diterima oleh kriteria Metropolis.
+- `no_neighbor`: iterasi ketika tidak berhasil menghasilkan neighbor valid.
+
+### Genetic Algorithm
+
+Contoh menjalankan GA dari root repository:
 
 ```bash
-# lengkapi sesuai file masing-masing
-python <path_ke_runner> ../input/<nama_file>.json
+python -m src.GA.run_ga input/sample_input.json \
+    --runs 3 \
+    --population-size 200 \
+    --mutation-rate 0.01 \
+    --max-generations 200 \
+    --objective base \
+    --seed 42 \
+    --out output
 ```
 
-### Alternatif: Jalankan dari Root Proyek
+| Opsi | Default | Keterangan |
+|---|---|---|
+| `--runs` | 3 | Jumlah run untuk konfigurasi parameter tersebut |
+| `--population-size` | 200 | Ukuran populasi |
+| `--mutation-rate` | 0.01 | Probabilitas mutasi individu |
+| `--max-generations` | 200 | Jumlah generasi maksimum |
+| `--objective` | `violation` | Pilihan `base` atau `violation`; gunakan `base` untuk objective total value dasar |
+| `--seed` | 42 | Seed awal; tiap run memakai seed turunan agar run dapat dibedakan dan direproduksi |
+| `--out` | `./output` | Direktori dasar output |
+| `--show` | tidak aktif | Tampilkan plot interaktif |
 
-Program juga dapat dijalankan langsung dari root repositori menggunakan modul Python (`-m`):
+Runner menambahkan nama objective ke direktori output. Contoh perintah di atas menghasilkan berkas di `output/ga_base/`, termasuk `summary.json`, `run<N>_initial_final.png`, dan `run<N>_objective_vs_iter.png`.
+
+#### Eksperimen GA sesuai spesifikasi
+
+Spesifikasi meminta dua rangkaian eksperimen, masing-masing berisi 3 konfigurasi × 3 run:
+
+1. **Populasi tetap, jumlah generasi bervariasi.**
+2. **Jumlah generasi tetap, ukuran populasi bervariasi.**
+
+Contoh berikut menjalankan kedua rangkaian dari Linux/macOS. Setiap eksekusi membuat direktori batch unik, dan setiap konfigurasi memiliki direktori sendiri sehingga hasil antarkonfigurasi tidak saling menimpa.
 
 ```bash
-# Menjalankan Hill-Climbing dari root:
-python -m src.HC.run_hc input/<nama_file>.json --variant all --runs 3 --out output
+RUN_ID="$(date +%Y%m%d_%H%M%S)_$$"
+BASE_OUT="output/ga_experiments/${RUN_ID}"
 
-# Menjalankan Simulated Annealing dari root:
-python -m src.SA.run_sa input/<nama_file>.json --runs 3 --out output
+run_ga() {
+    local label="$1"
+    local population="$2"
+    local generations="$3"
+
+    python -m src.GA.run_ga input/sample_input.json \
+        --runs 3 \
+        --population-size "$population" \
+        --mutation-rate 0.01 \
+        --max-generations "$generations" \
+        --objective base \
+        --seed 42 \
+        --out "${BASE_OUT}/${label}"
+}
+
+# A. Populasi tetap 100; generasi 50, 100, dan 150.
+run_ga A_pop100_gen50 100 50
+run_ga A_pop100_gen100 100 100
+run_ga A_pop100_gen150 100 150
+
+# B. Generasi tetap 100; populasi 25, 50, dan 75.
+run_ga B_pop25_gen100 25 100
+run_ga B_pop50_gen100 50 100
+run_ga B_pop75_gen100 75 100
+
+echo "Hasil eksperimen tersimpan di: ${BASE_OUT}"
+```
+
+Karena runner menambahkan folder `ga_base`, masing-masing hasil berada di direktori seperti `${BASE_OUT}/A_pop100_gen50/ga_base/`. Setiap `summary.json` harus berisi 3 run. Simpan nilai populasi dan generasi yang digunakan secara konsisten saat membandingkan hasil.
+
+### Menampilkan bantuan CLI
+
+Untuk melihat opsi yang benar-benar tersedia di runner yang terpasang, jalankan:
+
+```bash
+python -m src.HC.run_hc --help
+python -m src.SA.run_sa --help
+python -m src.GA.run_ga --help
 ```
 
 ## Catatan Implementasi Fondasi
@@ -162,13 +228,13 @@ Modul `src/foundation.py` memuat representasi objek dasar (`Truck`, `Package`, `
 - **Steepest Ascent**: Mengevaluasi kandidat tetangga deterministik (swap, move, rotasi 90°) serta sampling operator INSERT (`insert_tries=50` per paket luar). Memilih tetangga dengan peningkatan nilai tertinggi. Jika tidak ditemukan tetangga yang meningkatkan nilai (termasuk saat daftar tetangga terisi namun bernilai $\le$ state saat ini), algoritma melakukan resampling hingga 3 kali (`max_resamples=3`) untuk mengundi ulang kombinasi penempatan INSERT. Pencarian berhenti jika setelah resampling tidak ditemukan peningkatan, tanpa menjamin optimum lokal terhadap seluruh kemungkinan penempatan.
 - **Sideways Move**: Mengizinkan perpindahan ke tetangga bernilai sama (plateau) dengan batasan `max_sideways` (default 50 moves berturut-turut / consecutive). Pencarian langsung berhenti begitu batas tercapai.
 - **Random Restart**: Menjalankan Steepest Ascent berkali-kali (`max_restart`) dari state awal acak dan melacak solusi terbaik secara global.
-- **Stochastic**: Melakukan sampling tetangga on-the-fly yang seimbang antar jenis aksi (swap, move, rotate, insert) tanpa membangun ribuan kandidat di memori, lalu memilih secara acak salah satu tetangga yang *strictly better*. Metrik `iterations` menghitung jumlah perpindahan sukses. Total batch sampling tidak dicatat secara terpisah.
+- **Stochastic**: Melakukan sampling tetangga on-the-fly yang seimbang antar jenis aksi (swap, move, rotate, insert), lalu memilih secara acak salah satu tetangga yang *strictly better*. Pada implementasi saat ini, `iterations` menghitung percobaan pencarian neighbor, termasuk iterasi ketika tidak ditemukan neighbor yang lebih baik.
 
 ## Catatan Implementasi Simulated Annealing
 
 - **Maksimasi**: ΔE = objective(neighbor) − objective(current). Move dengan ΔE ≥ 0 selalu diterima, move yang lebih buruk diterima dengan probabilitas e^(ΔE/T).
 - **Neighbor**: satu neighbor valid dipilih acak dari move *swap*, *move*, *rotate*, dan *insert* (maksimal 30 percobaan; jika tidak ada yang valid, iterasi dilewati dan suhu tetap turun).
-- **Stuck**: iterasi di mana neighbor yang lebih buruk ditolak sehingga SA bertahan di state yang sama. Frekuensinya = jumlah stuck / jumlah iterasi.
+- **Metrik stagnasi dan penerimaan**: `non_improving_iteration_count` menghitung iterasi ketika neighbor valid tidak meningkatkan objective (atau neighbor valid tidak berhasil dibuat), sedangkan `non_improving_iteration_frequency` membaginya dengan total iterasi. Metrik ini adalah indikator stagnasi, bukan bukti pasti local optimum karena SA hanya memeriksa satu neighbor acak per iterasi. `rejected_worse_count` menghitung kandidat lebih buruk yang ditolak; `worse_neighbor_rejection_rate` membaginya dengan seluruh kandidat lebih buruk, baik yang ditolak maupun diterima. Jika tidak ada kandidat lebih buruk, rejection rate tidak terdefinisi (`null`/`N/A`).
 - **Objective bonus**: `eta` (value dibobot urgensi 1 + 1/(1+ETA)) dan `light` (value dikurangi penalti berat kecil). Keduanya tidak menambah variabel baru.
 
 ## Pembagian Tugas

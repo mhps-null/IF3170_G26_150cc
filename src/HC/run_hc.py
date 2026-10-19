@@ -104,7 +104,28 @@ def run_variant(variant: str, hc: HillClimbing, truck, catalog, args, out_dir: s
         else:
             raise ValueError(f"Unknown variant: {variant}")
 
-        histories[label] = [float(v) for v in hist]
+        if variant == "restart":
+            # Setiap restart memiliki initial state dan riwayat sendiri.
+            boundaries = r_idx + [len(hist)]
+        
+            for restart_number, (start_idx, end_idx) in enumerate(
+                zip(boundaries[:-1], boundaries[1:]),
+                start=1,
+            ):
+                segment = [float(v) for v in hist[start_idx:end_idx]]
+        
+                # Satu nilai awal + satu nilai untuk setiap iterasi.
+                expected_length = r_iters[restart_number - 1] + 1
+                if len(segment) != expected_length:
+                    raise RuntimeError(
+                        f"Riwayat Restart {restart_number} tidak konsisten: "
+                        f"{len(segment)} nilai, seharusnya {expected_length}."
+                    )
+        
+                histories[f"{label} - Restart {restart_number}"] = segment
+        else:
+            histories[label] = [float(v) for v in hist]
+
         init_val = start_st.get_objective_value(catalog)
         final_val = final_st.get_objective_value(catalog)
         best_val = max(hist) if hist else final_val
