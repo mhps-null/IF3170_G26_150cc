@@ -25,8 +25,10 @@ Algoritma yang diimplementasikan:
 ├── output/      # hasil run algoritma (gambar PNG dan summary.json)
 ├── src/
 │   ├── foundation.py      # Package, Truck, State, objective function, validasi, neighbor
+│   ├── visualization.py   # Visualisasi 3D state truk dan plot perbandingan eksperimen
+│   ├── HC/                # Hill-Climbing (Steepest, Sideways, Restart, Stochastic) & runner
 │   ├── SA/                # Simulated Annealing, visualisasi, objective bonus, runner
-│   └── ...                # Hill-Climbing dan Genetic Algorithm
+│   └── GA/                # Genetic Algorithm
 └── README.md
 ```
 
@@ -59,7 +61,42 @@ File JSON di folder `input/`:
 
 ## Cara Menjalankan
 
-Jalankan dari folder `src/`.
+Program dapat dijalankan dari folder `src/` (rekomendasi) atau langsung dari root repositori.
+
+### Jalankan dari folder `src/` (Rekomendasi)
+
+**Hill-Climbing**
+
+```bash
+# Menjalankan semua varian sekaligus (3 runs per varian)
+python HC/run_hc.py ../input/<nama_file>.json --variant all --runs 3 --out ../output
+
+# Menjalankan varian tertentu
+python HC/run_hc.py ../input/<nama_file>.json --variant steepest --runs 3 --out ../output
+python HC/run_hc.py ../input/<nama_file>.json --variant sideways --runs 3 --out ../output
+python HC/run_hc.py ../input/<nama_file>.json --variant restart --runs 3 --out ../output
+python HC/run_hc.py ../input/<nama_file>.json --variant stochastic --runs 3 --out ../output
+```
+
+| Opsi | Default | Keterangan |
+|---|---|---|
+| `--variant` | `all` | Pilihan varian: `steepest`, `sideways`, `restart`, `stochastic`, atau `all` |
+| `--runs` | 3 | Jumlah run / percobaan per varian |
+| `--seed` | 42 | Seed acak agar hasil dapat direproduksi |
+| `--out` | `../output` | Direktori output untuk menyimpan gambar dan ringkasan |
+| `--insert-tries` | 50 | Jumlah percobaan sampling posisi penempatan INSERT per paket luar |
+| `--max-sideways` | 50 | Batas sideways move (untuk Sideways Move) |
+| `--cumulative` | False | Mode sideways kumulatif (default: consecutive / reset saat nilai naik) |
+| `--max-restart` | 3 | Batas restart (untuk Random Restart) |
+| `--sample-size` | 15 | Jumlah sampel tetangga per iterasi (untuk Stochastic HC) |
+| `--max-no-improve` | 50 | Batas toleransi tanpa perbaikan (untuk Stochastic HC) |
+| `--show` | – | Tampilkan jendela plot interaktif |
+
+Hasil tiap varian disimpan di `output/hc_<variant>/`:
+- `run<N>_initial_final.png` – visualisasi 3D state awal dan akhir (paket di dalam dan di luar truk, value, berat),
+- `objective_vs_iter.png` – nilai objective function per iterasi,
+- `summary.json` – ringkasan parameter, durasi, iterasi, nilai awal/akhir, dan snapshot penempatan koordinat paket.
+Jika menjalankan `--variant all`, grafik perbandingan nilai akhir antar varian disimpan di `output/hc_comparison/hc_variants_comparison.png`.
 
 **Simulated Annealing**
 
@@ -85,12 +122,47 @@ Hasil tiap run disimpan di `output/sa_<objective>/`:
 - `sa_probability.png` – nilai e^(ΔE/T) per iterasi,
 - `summary.json` – parameter, durasi, jumlah iterasi, frekuensi *stuck*, serta state awal dan akhir.
 
-**Hill-Climbing dan Genetic Algorithm**
+**Genetic Algorithm**
 
 ```bash
 # lengkapi sesuai file masing-masing
 python <path_ke_runner> ../input/<nama_file>.json
 ```
+
+### Alternatif: Jalankan dari Root Proyek
+
+Program juga dapat dijalankan langsung dari root repositori menggunakan modul Python (`-m`):
+
+```bash
+# Menjalankan Hill-Climbing dari root:
+python -m src.HC.run_hc input/<nama_file>.json --variant all --runs 3 --out output
+
+# Menjalankan Simulated Annealing dari root:
+python -m src.SA.run_sa input/<nama_file>.json --runs 3 --out output
+```
+
+## Catatan Implementasi Fondasi
+
+Modul `src/foundation.py` memuat representasi objek dasar (`Truck`, `Package`, `PackagePlacement`, `State`), validasi batasan fisik, parsing file input JSON, dan fungsi pembangkitan tetangga (*neighbor generation*):
+
+- **Validasi State** (`State.is_valid`):
+  - *Dimensi*: Semua paket berada di dalam ruang kontainer truk ($x+w \le W$, $y+l \le L$, $z+h \le H$).
+  - *Kapasitas Berat*: Total berat paket terangkut tidak melampaui `maxCapacity` truk.
+  - *Overlap*: Tidak ada dua paket atau lebih yang saling tumpang tindih dalam ruang 3D.
+  - *Penopang Fisik*: Paket tidak boleh melayang; setiap paket harus bertumpu pada lantai kontainer ($z=0$) atau tepat di atas permukaan atas paket lain.
+  - *Proteksi Fragile*: Paket bertanda `is_fragile = true` tidak boleh menjadi penopang bagi paket lain di atasnya.
+- **Operator Tetangga** (`State.generate_neighbors`):
+  - **MOVE**: Menggeser posisi paket di dalam truk secara lokal ($\pm$ `max_shift` unit pada koordinat $x$ dan $y$, serta menempatkannya pada tingkat ketinggian $z$ penopang yang valid).
+  - **SWAP**: Menukar posisi koordinat dan orientasi antara dua paket.
+  - **ROTATE**: Rotasi $90^\circ$ terhadap satu sumbu ($x, y,$ atau $z$). Dari orientasi $(w, l, h)$ hanya menghasilkan 3 kemungkinan orientasi: $(l, w, h)$, $(w, h, l)$, atau $(h, l, w)$.
+  - **INSERT**: Menempatkan paket dari luar truk ke dalam kontainer dengan memilih orientasi acak dan posisi $(x, y, z)$ yang bertumpu pada lantai atau paket lain (`support levels`).
+
+## Catatan Implementasi Hill-Climbing
+
+- **Steepest Ascent**: Mengevaluasi kandidat tetangga deterministik (swap, move, rotasi 90°) serta sampling operator INSERT (`insert_tries=50` per paket luar). Memilih tetangga dengan peningkatan nilai tertinggi. Jika tidak ditemukan tetangga yang meningkatkan nilai (termasuk saat daftar tetangga terisi namun bernilai $\le$ state saat ini), algoritma melakukan resampling hingga 3 kali (`max_resamples=3`) untuk mengundi ulang kombinasi penempatan INSERT. Pencarian berhenti jika setelah resampling tidak ditemukan peningkatan, tanpa menjamin optimum lokal terhadap seluruh kemungkinan penempatan.
+- **Sideways Move**: Mengizinkan perpindahan ke tetangga bernilai sama (plateau) dengan batasan `max_sideways` (default 50 moves berturut-turut / consecutive). Pencarian langsung berhenti begitu batas tercapai.
+- **Random Restart**: Menjalankan Steepest Ascent berkali-kali (`max_restart`) dari state awal acak dan melacak solusi terbaik secara global.
+- **Stochastic**: Melakukan sampling tetangga on-the-fly yang seimbang antar jenis aksi (swap, move, rotate, insert) tanpa membangun ribuan kandidat di memori, lalu memilih secara acak salah satu tetangga yang *strictly better*. Metrik `iterations` menghitung jumlah perpindahan sukses. Total batch sampling tidak dicatat secara terpisah.
 
 ## Catatan Implementasi Simulated Annealing
 
@@ -103,6 +175,6 @@ python <path_ke_runner> ../input/<nama_file>.json
 
 | Anggota | NIM | Tugas |
 |---|---|---|
-| _Nathan Adhika S_ | _13524041_ | Fondasi (objective function, validasi, neighbor, input parser) dan Hill-Climbing (semua varian) |
-| _Muhammad Haris P S_ | _13524053_ | Simulated Annealing, visualisasi, dan Bonus 1 (objective function alternatif) |
-| _M Iqbal Raihan_ | _NIM_ | Genetic Algorithm dan Bonus 3 |
+| Nathan Adhika S | 13524041 | Fondasi (objective function, validasi, neighbor, input parser) dan Hill-Climbing (semua varian) |
+| Muhammad Haris P S | 13524053 | Simulated Annealing, visualisasi, dan Bonus 1 (objective function alternatif) |
+| M Iqbal Raihan | 13524011 | Genetic Algorithm dan Bonus 3 |
