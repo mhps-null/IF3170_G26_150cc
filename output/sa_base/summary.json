@@ -11,7 +11,7 @@
     {
       "run": 1,
       "iterations": 6820,
-      "duration_s": 4.959,
+      "duration_s": 13.048,
       "initial_base_value": 884,
       "final_objective": 2189,
       "final_base_value": 2189,
@@ -376,7 +376,7 @@
     {
       "run": 2,
       "iterations": 6820,
-      "duration_s": 4.784,
+      "duration_s": 12.864,
       "initial_base_value": 566,
       "final_objective": 2189,
       "final_base_value": 2189,
@@ -714,7 +714,7 @@
     {
       "run": 3,
       "iterations": 6820,
-      "duration_s": 4.881,
+      "duration_s": 13.812,
       "initial_base_value": 767,
       "final_objective": 2189,
       "final_base_value": 2189,

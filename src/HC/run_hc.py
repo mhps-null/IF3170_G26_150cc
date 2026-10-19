@@ -4,9 +4,10 @@ Runs Steepest Ascent, Sideways Move, Random Restart, or Stochastic Hill-Climbing
 saves 3D visualizations and summary metrics to the output directory.
 
 Usage examples:
-    python HC/run_hc.py ../input/cek.json --variant steepest --runs 3 --out ../output
-    python HC/run_hc.py ../input/cek.json --variant all --runs 3 --out ../output
+    python HC/run_hc.py ../input/sample_input.json --variant steepest --runs 3 --out ../output
+    python HC/run_hc.py ../input/sample_input.json --variant all --runs 3 --out ../output
 """
+
 import argparse
 import json
 import os
@@ -35,8 +36,16 @@ except ModuleNotFoundError:
 
 def placements_to_dict(state):
     return {
-        pid: (None if pos is None else
-              {"x": pos.x, "y": pos.y, "z": pos.z, "orientation": list(pos.orientation)})
+        pid: (
+            None
+            if pos is None
+            else {
+                "x": pos.x,
+                "y": pos.y,
+                "z": pos.z,
+                "orientation": list(pos.orientation),
+            }
+        )
         for pid, pos in state.placements.items()
     }
 
@@ -55,8 +64,7 @@ def run_variant(variant: str, hc: HillClimbing, truck, catalog, args, out_dir: s
 
         if variant == "steepest":
             final_st, start_st, iters, dur, hist = hc.steepest_ascent(
-                initial_state=initial_st,
-                insert_tries=args.insert_tries
+                initial_state=initial_st, insert_tries=args.insert_tries
             )
             extra_info = {}
 
@@ -65,30 +73,32 @@ def run_variant(variant: str, hc: HillClimbing, truck, catalog, args, out_dir: s
                 max_sideways=args.max_sideways,
                 initial_state=initial_st,
                 consecutive=not args.cumulative,
-                insert_tries=args.insert_tries
+                insert_tries=args.insert_tries,
             )
-            extra_info = {"max_sideways": args.max_sideways, "consecutive": not args.cumulative}
+            extra_info = {
+                "max_sideways": args.max_sideways,
+                "consecutive": not args.cumulative,
+            }
 
         elif variant == "restart":
             final_st, start_st, iters, dur, hist, r_iters, r_idx = hc.random_restart(
-                max_restart=args.max_restart,
-                insert_tries=args.insert_tries
+                max_restart=args.max_restart, insert_tries=args.insert_tries
             )
             extra_info = {
                 "max_restart": args.max_restart,
                 "restart_iterations": r_iters,
-                "restart_indices": r_idx
+                "restart_indices": r_idx,
             }
 
         elif variant == "stochastic":
             final_st, start_st, iters, dur, hist = hc.stochastic(
                 initial_state=initial_st,
                 max_no_improve=args.max_no_improve,
-                sample_size=args.sample_size
+                sample_size=args.sample_size,
             )
             extra_info = {
                 "sample_size": args.sample_size,
-                "max_no_improve": args.max_no_improve
+                "max_no_improve": args.max_no_improve,
             }
 
         else:
@@ -101,10 +111,13 @@ def run_variant(variant: str, hc: HillClimbing, truck, catalog, args, out_dir: s
 
         # Save 3D state visualization
         viz.plot_initial_final(
-            start_st, final_st, truck, catalog,
+            start_st,
+            final_st,
+            truck,
+            catalog,
             suptitle=f"Hill-Climbing ({variant.capitalize()}) - {label}",
             save_path=os.path.join(out_dir, f"run{r}_initial_final.png"),
-            show=args.show
+            show=args.show,
         )
 
         run_record = {
@@ -130,7 +143,7 @@ def run_variant(variant: str, hc: HillClimbing, truck, catalog, args, out_dir: s
         histories,
         title=f"Hill-Climbing ({variant.capitalize()}): Objective vs Iterasi",
         save_path=os.path.join(out_dir, "objective_vs_iter.png"),
-        show=args.show
+        show=args.show,
     )
 
     # Save summary.json
@@ -139,14 +152,18 @@ def run_variant(variant: str, hc: HillClimbing, truck, catalog, args, out_dir: s
         "variant": variant,
         "runs": args.runs,
         "seed": args.seed,
-        "insert_tries": args.insert_tries
+        "insert_tries": args.insert_tries,
     }
     if variant == "sideways":
-        params.update({"max_sideways": args.max_sideways, "consecutive": not args.cumulative})
+        params.update(
+            {"max_sideways": args.max_sideways, "consecutive": not args.cumulative}
+        )
     elif variant == "restart":
         params.update({"max_restart": args.max_restart})
     elif variant == "stochastic":
-        params.update({"sample_size": args.sample_size, "max_no_improve": args.max_no_improve})
+        params.update(
+            {"sample_size": args.sample_size, "max_no_improve": args.max_no_improve}
+        )
 
     with open(os.path.join(out_dir, "summary.json"), "w") as f:
         json.dump({"params": params, "runs": summary}, f, indent=2)
@@ -157,25 +174,62 @@ def run_variant(variant: str, hc: HillClimbing, truck, catalog, args, out_dir: s
 
 def main():
     ap = argparse.ArgumentParser(description="Runner eksperimen Hill-Climbing")
-    ap.add_argument("input", help="Path ke file input JSON (e.g., input/cek.json)")
+    ap.add_argument(
+        "input", help="Path ke file input JSON (e.g., input/sample_input.json)"
+    )
     ap.add_argument(
         "--variant",
         choices=["steepest", "sideways", "restart", "stochastic", "all"],
         default="all",
-        help="Varian HC yang ingin dijalankan (default: all)"
+        help="Varian HC yang ingin dijalankan (default: all)",
     )
-    ap.add_argument("--runs", type=int, default=3, help="Jumlah percobaan/run per varian (default: 3)")
+    ap.add_argument(
+        "--runs",
+        type=int,
+        default=3,
+        help="Jumlah percobaan/run per varian (default: 3)",
+    )
     ap.add_argument("--seed", type=int, default=42, help="Seed acak (default: 42)")
-    ap.add_argument("--out", default="../output", help="Folder output (default: ../output)")
-    ap.add_argument("--show", action="store_true", help="Tampilkan jendela plot secara interaktif")
+    ap.add_argument(
+        "--out", default="./output", help="Folder output (default: ./output)"
+    )
+    ap.add_argument(
+        "--show", action="store_true", help="Tampilkan jendela plot secara interaktif"
+    )
 
     # Hyperparameters
-    ap.add_argument("--insert-tries", type=int, default=50, help="Jumlah percobaan sampling INSERT (default: 50)")
-    ap.add_argument("--max-sideways", type=int, default=50, help="Batas sideways move (default: 50)")
-    ap.add_argument("--cumulative", action="store_true", help="Gunakan penghitung sideways kumulatif (default: consecutive)")
-    ap.add_argument("--max-restart", type=int, default=3, help="Jumlah restart untuk Random Restart (default: 3)")
-    ap.add_argument("--sample-size", type=int, default=15, help="Jumlah sampel per iterasi Stochastic HC (default: 15)")
-    ap.add_argument("--max-no-improve", type=int, default=50, help="Batas no-improve Stochastic HC (default: 50)")
+    ap.add_argument(
+        "--insert-tries",
+        type=int,
+        default=50,
+        help="Jumlah percobaan sampling INSERT (default: 50)",
+    )
+    ap.add_argument(
+        "--max-sideways", type=int, default=50, help="Batas sideways move (default: 50)"
+    )
+    ap.add_argument(
+        "--cumulative",
+        action="store_true",
+        help="Gunakan penghitung sideways kumulatif (default: consecutive)",
+    )
+    ap.add_argument(
+        "--max-restart",
+        type=int,
+        default=3,
+        help="Jumlah restart untuk Random Restart (default: 3)",
+    )
+    ap.add_argument(
+        "--sample-size",
+        type=int,
+        default=15,
+        help="Jumlah sampel per iterasi Stochastic HC (default: 15)",
+    )
+    ap.add_argument(
+        "--max-no-improve",
+        type=int,
+        default=50,
+        help="Batas no-improve Stochastic HC (default: 50)",
+    )
 
     args = ap.parse_args()
 
@@ -202,7 +256,7 @@ def main():
             all_comparison_results,
             title="Hill-Climbing: Perbandingan Nilai Akhir Antar Varian",
             save_path=os.path.join(comp_dir, "hc_variants_comparison.png"),
-            show=args.show
+            show=args.show,
         )
         print(f"\nPlot perbandingan antar varian disimpan di {comp_dir}")
 

@@ -3,8 +3,8 @@ Runner eksperimen Simulated Annealing: jalankan N kali, simpan visualisasi dan
 ringkasan ke folder output.
 
 Contoh:
-    python run_sa.py sample_input.json --runs 3 --out ../output
-    python run_sa.py sample_input.json --objective eta      # Bonus 1
+    python -m src.SA.run_sa input/sample_input.json --runs 3 --out output
+    python -m src.SA.run_sa input/sample_input.json --objective eta      # Bonus 1
 """
 import argparse
 import json
@@ -33,7 +33,7 @@ def main():
     ap.add_argument("--max-iter", type=int, default=20000)
     ap.add_argument("--objective", choices=list(OBJECTIVES), default="base")
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--out", default="../output")
+    ap.add_argument("--out", default="./output")
     ap.add_argument("--show", action="store_true", help="tampilkan jendela plot")
     args = ap.parse_args()
 

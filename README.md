@@ -40,7 +40,7 @@ Membutuhkan **Python 3.10+**.
 # 1. Buat dan aktifkan virtual environment
 python -m venv .venv
 .venv\Scripts\activate          # Windows (PowerShell)
-# source .venv/bin/activate     # Linux / macOS
+source .venv/bin/activate     # Linux / macOS
 
 # 2. Pasang dependensi
 pip install matplotlib
