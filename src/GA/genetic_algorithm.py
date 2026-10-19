@@ -36,6 +36,21 @@ class GeneticAlgorithm:
     mutation_rate: float
     max_generations: int
 
+    def _evaluate_fitness(self, state: foundation.State) -> float:
+        """Evaluasi fitness hanya untuk state yang valid."""
+    
+        if set(state.placements.keys()) != set(self.catalog.keys()):
+            raise ValueError(
+                "State harus memetakan seluruh paket dalam catalog."
+            )
+    
+        if not state.is_valid(self.truck, self.catalog):
+            raise ValueError(
+                "GA tidak boleh mengevaluasi state yang melanggar constraint."
+            )
+    
+        return float(self.objective_fn(state))
+
     def __init__(
         self,
         truck: foundation.Truck,
@@ -56,22 +71,30 @@ class GeneticAlgorithm:
         self.max_generations = max_generations
 
         if initial_population is not None:
+            if not initial_population:
+                raise ValueError("Initial population tidak boleh kosong.")
+        
             self.population = [
-                self.Individual(state=state, fitness=self.objective_fn(state))
+                self.Individual(
+                    state=state.copy_state(),
+                    fitness=self._evaluate_fitness(state),
+                )
                 for state in initial_population
             ]
         else:
-            self.population = [
-                self.Individual(
-                    state=(
-                        state := foundation.generate_random_state(
-                            self.truck, self.catalog
-                        )
-                    ),
-                    fitness=self.objective_fn(state),
+            self.population = []
+        
+            for _ in range(self.population_size):
+                state = foundation.generate_random_state(
+                    self.truck, self.catalog
                 )
-                for _ in range(self.population_size)
-            ]
+        
+                self.population.append(
+                    self.Individual(
+                        state=state,
+                        fitness=self._evaluate_fitness(state),
+                    )
+                )
 
     def roulette_wheel_selection(
         self, selection_probabilities: Optional[List[float]]
@@ -97,28 +120,107 @@ class GeneticAlgorithm:
             for _ in range(self.population_size)
         ]
 
-    def crossover(self, parent1: Individual, parent2: Individual) -> Individual:
-        # default: single point crossover
+    def crossover(
+        self,
+        parent1: Individual,
+        parent2: Individual,
+    ) -> Individual:
+        """Single-point crossover dengan perbaikan state yang tidak valid."""
+    
         ids = list(self.catalog)
-        cut_point = random.randrange(len(ids))
-
+    
+        if not ids:
+            raise ValueError("Catalog paket tidak boleh kosong.")
+    
+        # Jika hanya ada satu paket, crossover tidak dapat membagi gen.
+        if len(ids) == 1:
+            chosen_parent = random.choice([parent1, parent2])
+            state = chosen_parent.state.copy_state()
+    
+            return self.Individual(
+                state=state,
+                fitness=self._evaluate_fitness(state),
+            )
+    
+        # Single-point crossover.
+        cut_point = random.randrange(1, len(ids))
+    
         placements = {
             pid: copy.copy(
-                (parent1 if i < cut_point else parent2).state.placements[pid]
+                (parent1 if i < cut_point else parent2)
+                .state.placements[pid]
             )
             for i, pid in enumerate(ids)
         }
-        state = foundation.State(placements=placements)
-        return self.Individual(state=state, fitness=self.objective_fn(state))
+    
+        child_state = foundation.State(placements=placements)
+    
+        # Jika hasil crossover valid, gunakan langsung.
+        if child_state.is_valid(self.truck, self.catalog):
+            return self.Individual(
+                state=child_state,
+                fitness=self._evaluate_fitness(child_state),
+            )
+    
+        # Jika tidak valid, bangun ulang state secara bertahap.
+        # None berarti paket berada di luar truk.
+        repaired_placements = {
+            pid: None for pid in ids
+        }
+    
+        # Paket di bagian bawah diproses lebih dahulu agar
+        # paket di atasnya hanya diterima jika mempunyai support.
+        ordered_ids = sorted(
+            (
+                pid
+                for pid in ids
+                if placements[pid] is not None
+            ),
+            key=lambda pid: (placements[pid].z, pid),
+        )
+    
+        for pid in ordered_ids:
+            repaired_placements[pid] = copy.copy(placements[pid])
+    
+            partial_state = foundation.State(
+                placements=repaired_placements.copy()
+            )
+    
+            # Tolak paket yang menyebabkan pelanggaran constraint.
+            if not partial_state.is_valid(self.truck, self.catalog):
+                repaired_placements[pid] = None
+    
+        repaired_state = foundation.State(
+            placements=repaired_placements
+        )
+    
+        # Pemeriksaan akhir untuk menjaga invariant GA.
+        if not repaired_state.is_valid(self.truck, self.catalog):
+            raise RuntimeError(
+                "Perbaikan crossover menghasilkan state tidak valid."
+            )
+    
+        return self.Individual(
+            state=repaired_state,
+            fitness=self._evaluate_fitness(repaired_state),
+        )
 
     def mutate(self, individual: Individual) -> Individual:
         neighbors = individual.state.generate_neighbors(
             self.truck, self.catalog, sample_size=15
         )
         if not neighbors:
-            return individual
+            return self.Individual(
+                state=individual.state.copy_state(),
+                fitness=individual.fitness,
+            )
+        
         state = random.choice(neighbors)
-        return self.Individual(state=state, fitness=self.objective_fn(state))
+        
+        return self.Individual(
+            state=state,
+            fitness=self._evaluate_fitness(state),
+        )
 
     def _record_population(self, max_history: List[float], avg_history: List[float]):
         fitnesses = [individual.fitness for individual in self.population]
