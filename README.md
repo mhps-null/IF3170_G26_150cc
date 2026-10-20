@@ -241,6 +241,6 @@ Modul `src/foundation.py` memuat representasi objek dasar (`Truck`, `Package`, `
 
 | Anggota | NIM | Tugas |
 |---|---|---|
-| Nathan Adhika S | 13524041 | Fondasi (objective function, validasi, neighbor, input parser) dan Hill-Climbing (semua varian) |
-| Muhammad Haris P S | 13524053 | Simulated Annealing, visualisasi, dan Bonus 1 (objective function alternatif) |
+| Nathan Adhika S | 13524041 | Laporan, Fondasi (objective function, validasi, neighbor, input parser) dan Hill-Climbing (semua varian) |
+| Muhammad Haris P S | 13524053 | Laporan, Simulated Annealing, visualisasi, dan Bonus 1 (objective function alternatif) |
 | M Iqbal Raihan | 13524011 | Genetic Algorithm dan Bonus 3 |
