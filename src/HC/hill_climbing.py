@@ -3,14 +3,14 @@ import random
 from typing import Dict, Tuple, List, Optional
 
 try:
-    from src.foundation import State, Truck, Package, generate_random_state
+    from src.foundation import Fleet, State, Package, generate_random_state
 except ModuleNotFoundError:
-    from foundation import State, Truck, Package, generate_random_state
+    from foundation import Fleet, State, Package, generate_random_state
 
 
 class HillClimbing:
-    def __init__(self, truck: Truck, catalog: Dict[str, Package]):
-        self.truck = truck
+    def __init__(self, fleet: Fleet, catalog: Dict[str, Package]):
+        self.fleet = fleet
         self.catalog = catalog
 
     def steepest_ascent(
@@ -24,7 +24,7 @@ class HillClimbing:
         if no improvement found which the local optimum not guaranteed.
         """
         start_time = time.perf_counter()
-        current_state = initial_state if initial_state else generate_random_state(self.truck, self.catalog)
+        current_state = initial_state if initial_state else generate_random_state(self.fleet, self.catalog)
         start_state = current_state.copy_state()
         current_value = current_state.get_objective_value(self.catalog)
         
@@ -35,7 +35,7 @@ class HillClimbing:
         while True:
             iterations += 1
             neighbors = current_state.generate_neighbors(
-                self.truck,
+                self.fleet,
                 self.catalog,
                 max_shift=2,
                 insert_tries=insert_tries
@@ -87,7 +87,7 @@ class HillClimbing:
             raise ValueError(f"max_sideways cannot be negative, got: {max_sideways}")
 
         start_time = time.perf_counter()
-        current_state = initial_state if initial_state else generate_random_state(self.truck, self.catalog)
+        current_state = initial_state if initial_state else generate_random_state(self.fleet, self.catalog)
         start_state = current_state.copy_state()
         current_value = current_state.get_objective_value(self.catalog)
         
@@ -99,7 +99,7 @@ class HillClimbing:
         while True:
             iterations += 1
             neighbors = current_state.generate_neighbors(
-                self.truck,
+                self.fleet,
                 self.catalog,
                 max_shift=2,
                 insert_tries=insert_tries
@@ -205,7 +205,7 @@ class HillClimbing:
         Samples neighbors immediately with balanced action type probabilities, then picks randomly among strictly better neighbors.
         """
         start_time = time.perf_counter()
-        current_state = initial_state if initial_state else generate_random_state(self.truck, self.catalog)
+        current_state = initial_state if initial_state else generate_random_state(self.fleet, self.catalog)
         start_state = current_state.copy_state()
         current_value = current_state.get_objective_value(self.catalog)
         
@@ -217,7 +217,7 @@ class HillClimbing:
             iterations += 1
             # Generate neighbors directly on-the-fly with balanced action types
             neighbors = current_state.generate_neighbors(
-                self.truck,
+                self.fleet,
                 self.catalog,
                 max_shift=2,
                 sample_size=sample_size,

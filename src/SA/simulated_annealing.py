@@ -31,8 +31,8 @@ from typing import Callable, Dict, List, Optional, Tuple
 from src.foundation import (
     Package,
     PackagePlacement,
+    Fleet,
     State,
-    Truck,
     generate_random_state,
     get_90deg_rotations,
 )
@@ -85,15 +85,20 @@ def suggest_t0(catalog: Dict[str, Package]) -> float:
 
 def _support_levels(
     state: State,
-    truck: Truck,
+    fleet: Fleet,
     catalog: Dict[str, Package],
+    truck_id: str,
     exclude: Optional[str] = None,
 ) -> List[int]:
-    """Mengembalikan ketinggian dasar truk dan permukaan paket."""
+    """Mengembalikan ketinggian dasar truk dan permukaan paket di truk yang sama."""
+    truck = fleet.trucks[truck_id]
     levels = {0}
 
     for pid, pos in state.placements.items():
         if pos is None or pid == exclude:
+            continue
+        owner = fleet.truck_for(pos)
+        if owner is None or owner.id != truck_id:
             continue
 
         _, _, effective_height = pos.get_effective_dimensions(catalog[pid])
@@ -107,7 +112,7 @@ def _support_levels(
 
 def random_neighbor(
     state: State,
-    truck: Truck,
+    fleet: Fleet,
     catalog: Dict[str, Package],
     max_shift: int = 2,
     max_tries: int = 30,
@@ -115,9 +120,10 @@ def random_neighbor(
     """Menghasilkan satu neighbor valid secara acak."""
 
     ids = list(state.placements.keys())
+    kinds = MOVE_TYPES + (("transfer",) if len(fleet.trucks) > 1 else ())
 
     for _ in range(max_tries):
-        kind = random.choice(MOVE_TYPES)
+        kind = random.choice(kinds)
         new_placements = state.copy_state().placements
 
         if kind == "swap":
@@ -145,13 +151,16 @@ def random_neighbor(
 
             pid = random.choice(inside)
             pos = new_placements[pid]
+            owner = fleet.truck_for(pos)
+            if owner is None:
+                continue
 
             nx = pos.x + random.randint(-max_shift, max_shift)
             ny = pos.y + random.randint(-max_shift, max_shift)
 
             nz = random.choice(
                 _support_levels(
-                    state, truck, catalog, exclude=pid
+                    state, fleet, catalog, owner.id, exclude=pid
                 )
             )
 
@@ -159,7 +168,7 @@ def random_neighbor(
                 continue
 
             new_placements[pid] = PackagePlacement(
-                nx, ny, nz, pos.orientation
+                nx, ny, nz, pos.orientation, owner.id
             )
 
         elif kind == "rotate":
@@ -173,6 +182,9 @@ def random_neighbor(
 
             pid = random.choice(inside)
             pos = new_placements[pid]
+            owner = fleet.truck_for(pos)
+            if owner is None:
+                continue
 
             # Hanya rotasi 90 derajat pada satu sumbu.
             possible_orientations = get_90deg_rotations(
@@ -189,10 +201,11 @@ def random_neighbor(
                 pos.y,
                 pos.z,
                 orientation,
+                owner.id,
             )
 
-        else:
-            # Insert: memindahkan paket dari luar ke dalam truk.
+        elif kind == "insert":
+            # Insert: memindahkan paket dari luar ke dalam salah satu truk.
             outside = [
                 pid for pid in ids
                 if new_placements[pid] is None
@@ -202,6 +215,7 @@ def random_neighbor(
                 continue
 
             pid = random.choice(outside)
+            truck = random.choice(list(fleet.trucks.values()))
             orientation = random.choice(ORIENTATIONS)
 
             ex, ey, ez = PackagePlacement(
@@ -215,17 +229,48 @@ def random_neighbor(
             ny = random.randint(0, truck.l - ey)
 
             nz = random.choice(
-                _support_levels(state, truck, catalog)
+                _support_levels(state, fleet, catalog, truck.id)
             )
 
             new_placements[pid] = PackagePlacement(
-                nx, ny, nz, orientation
+                nx, ny, nz, orientation, truck.id
+            )
+
+        else:
+            inside = [
+                pid for pid in ids
+                if new_placements[pid] is not None
+            ]
+            if not inside or len(fleet.trucks) < 2:
+                continue
+            pid = random.choice(inside)
+            origin = fleet.truck_for(new_placements[pid])
+            if origin is None:
+                continue
+            destinations = [
+                truck for truck in fleet.trucks.values()
+                if truck.id != origin.id
+            ]
+            truck = random.choice(destinations)
+            orientation = random.choice(ORIENTATIONS)
+            ex, ey, ez = PackagePlacement(
+                0, 0, 0, orientation
+            ).get_effective_dimensions(catalog[pid])
+            if ex > truck.w or ey > truck.l or ez > truck.h:
+                continue
+            nx = random.randint(0, truck.w - ex)
+            ny = random.randint(0, truck.l - ey)
+            nz = random.choice(
+                _support_levels(state, fleet, catalog, truck.id, exclude=pid)
+            )
+            new_placements[pid] = PackagePlacement(
+                nx, ny, nz, orientation, truck.id
             )
 
         candidate = State(placements=new_placements)
 
         # Seluruh constraint harus dipenuhi.
-        if candidate.is_valid(truck, catalog):
+        if candidate.is_valid(fleet, catalog):
             return candidate
 
     return None
@@ -234,11 +279,11 @@ def random_neighbor(
 class SimulatedAnnealing:
     def __init__(
         self,
-        truck: Truck,
+        fleet: Fleet,
         catalog: Dict[str, Package],
         objective_fn: Optional[ObjectiveFn] = None,
     ):
-        self.truck = truck
+        self.fleet = fleet
         self.catalog = catalog
 
         # Default: memaksimalkan total value paket di dalam truk.
@@ -274,10 +319,10 @@ class SimulatedAnnealing:
         initial = (
             initial_state
             if initial_state is not None
-            else generate_random_state(self.truck, self.catalog)
+            else generate_random_state(self.fleet, self.catalog)
         )
 
-        if not initial.is_valid(self.truck, self.catalog):
+        if not initial.is_valid(self.fleet, self.catalog):
             raise ValueError("Initial state melanggar constraint.")
 
         current = initial.copy_state()
@@ -309,7 +354,7 @@ class SimulatedAnnealing:
 
             neighbor = random_neighbor(
                 current,
-                self.truck,
+                self.fleet,
                 self.catalog,
                 max_shift=max_shift,
             )

@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from src.foundation import Package, State, Truck
+from src.foundation import Fleet, Package, State, Truck
 
 # ---------- helper ----------
 def _box_faces(x, y, z, dx, dy, dz):
@@ -34,9 +34,16 @@ def _outside_count(state: State) -> int:
     )
 
 
+def _in_truck(fleet: Fleet, pos, truck_id: str) -> bool:
+    if pos is None:
+        return False
+    owner = fleet.truck_for(pos)
+    return owner is not None and owner.id == truck_id
+
+
 def _info_text(
     state: State,
-    truck: Truck,
+    fleet: Fleet,
     catalog: Dict[str, Package],
 ) -> str:
     inside = [
@@ -48,20 +55,27 @@ def _info_text(
         if pos is None
     )
 
-    total_weight = sum(
-        catalog[pid].weight for pid in inside
-    )
-
     lines = [
         f"Value total : {state.get_objective_value(catalog)}",
-        f"Berat       : {total_weight} / {truck.maxCapacity}",
         f"Di dalam    : {len(inside)} paket",
         f"Di luar     : {len(outside)} paket",
-        f"Peti kemas  : {truck.w} x {truck.l} x {truck.h}",
+    ]
+    for truck in fleet.trucks.values():
+        loaded = [
+            pid for pid, pos in state.placements.items()
+            if _in_truck(fleet, pos, truck.id)
+        ]
+        weight = sum(catalog[pid].weight for pid in loaded)
+        label = truck.id if len(fleet.trucks) > 1 else "Truk"
+        lines.append(
+            f"{label:<8}: {weight} / {truck.maxCapacity} kg, "
+            f"{len(loaded)} paket, {truck.w} x {truck.l} x {truck.h}"
+        )
+    lines.extend([
         "Garis merah tebal = paket fragile",
         "",
         "DETAIL SELURUH PAKET DI LUAR TRUK",
-    ]
+    ])
 
     if not outside:
         lines.append("Tidak ada paket di luar truk.")
@@ -91,13 +105,13 @@ def _info_panel_height(max_outside: int) -> float:
     return max(2.8, (max_outside + 8) * 0.16)
 
 # ---------- state / truk ----------
-def draw_state(ax, state: State, truck: Truck, catalog: Dict[str, Package], title: str = ""):
+def draw_state(ax, state: State, truck: Truck, fleet: Fleet, catalog: Dict[str, Package], title: str = ""):
     colors = _colors(catalog)
     ax.add_collection3d(Poly3DCollection(
         _box_faces(0, 0, 0, truck.w, truck.l, truck.h),
         facecolors="gray", edgecolors="black", linewidths=1.2, alpha=0.05))
     for pid, pos in state.placements.items():
-        if pos is None:
+        if not _in_truck(fleet, pos, truck.id):
             continue
         pkg = catalog[pid]
         dx, dy, dz = pos.get_effective_dimensions(pkg)
@@ -114,42 +128,31 @@ def draw_state(ax, state: State, truck: Truck, catalog: Dict[str, Package], titl
 
 def plot_state(
     state: State,
-    truck: Truck,
+    fleet: Fleet,
     catalog: Dict[str, Package],
     title: str = "State",
     save_path: Optional[str] = None,
     show: bool = False,
 ):
+    trucks = list(fleet.trucks.values())
     info_height = _info_panel_height(_outside_count(state))
     fig_height = max(7.0, 2.0 + info_height)
+    fig = plt.figure(figsize=(6 + 4.5 * len(trucks), fig_height))
+    gs = fig.add_gridspec(1, len(trucks) + 1, width_ratios=[2.0] * len(trucks) + [1.7])
 
-    fig = plt.figure(figsize=(15, fig_height))
-    gs = fig.add_gridspec(
-        1,
-        2,
-        width_ratios=[2.0, 1.7],
-    )
+    for col, truck in enumerate(trucks):
+        label = title if len(trucks) == 1 else f"{title} — {truck.id}"
+        draw_state(
+            fig.add_subplot(gs[0, col], projection="3d"),
+            state, truck, fleet, catalog, label,
+        )
 
-    draw_state(
-        fig.add_subplot(gs[0], projection="3d"),
-        state,
-        truck,
-        catalog,
-        title,
-    )
-
-    axt = fig.add_subplot(gs[1])
+    axt = fig.add_subplot(gs[0, -1])
     axt.axis("off")
     axt.text(
-        0,
-        1,
-        _info_text(state, truck, catalog),
-        va="top",
-        family="monospace",
-        fontsize=7.2,
-        linespacing=1.15,
+        0, 1, _info_text(state, fleet, catalog),
+        va="top", family="monospace", fontsize=7.2, linespacing=1.15,
     )
-
     _finish(fig, save_path, show)
     return fig
 
@@ -157,60 +160,45 @@ def plot_state(
 def plot_initial_final(
     start: State,
     final: State,
-    truck: Truck,
+    fleet: Fleet,
     catalog: Dict[str, Package],
     suptitle: str = "",
     save_path: Optional[str] = None,
     show: bool = False,
 ):
-    max_outside = max(
-        _outside_count(start),
-        _outside_count(final),
-    )
-
-    top_height = 6.0
+    trucks = list(fleet.trucks.values())
+    max_outside = max(_outside_count(start), _outside_count(final))
+    top_height = 4.2
     info_height = _info_panel_height(max_outside)
-
-    fig = plt.figure(
-        figsize=(15, top_height + info_height)
-    )
+    fig = plt.figure(figsize=(14, top_height * len(trucks) + info_height))
     gs = fig.add_gridspec(
+        len(trucks) + 1,
         2,
-        2,
-        height_ratios=[top_height, info_height],
+        height_ratios=[top_height] * len(trucks) + [info_height],
     )
 
-    draw_state(
-        fig.add_subplot(gs[0, 0], projection="3d"),
-        start,
-        truck,
-        catalog,
-        "State Awal",
-    )
-    draw_state(
-        fig.add_subplot(gs[0, 1], projection="3d"),
-        final,
-        truck,
-        catalog,
-        "State Akhir",
-    )
+    for row, truck in enumerate(trucks):
+        start_title = "State Awal" if len(trucks) == 1 else f"Awal — {truck.id}"
+        final_title = "State Akhir" if len(trucks) == 1 else f"Akhir — {truck.id}"
+        draw_state(
+            fig.add_subplot(gs[row, 0], projection="3d"),
+            start, truck, fleet, catalog, start_title,
+        )
+        draw_state(
+            fig.add_subplot(gs[row, 1], projection="3d"),
+            final, truck, fleet, catalog, final_title,
+        )
 
     for col, state in enumerate((start, final)):
-        axt = fig.add_subplot(gs[1, col])
+        axt = fig.add_subplot(gs[-1, col])
         axt.axis("off")
         axt.text(
-            0,
-            1,
-            _info_text(state, truck, catalog),
-            va="top",
-            family="monospace",
-            fontsize=7.2,
-            linespacing=1.15,
+            0, 1, _info_text(state, fleet, catalog),
+            va="top", family="monospace", fontsize=7.2, linespacing=1.15,
         )
 
     if suptitle:
         fig.suptitle(suptitle)
-
     _finish(fig, save_path, show)
     return fig
 

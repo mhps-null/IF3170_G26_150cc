@@ -1,0 +1,520 @@
+{
+  "trucks": [
+    {
+      "id": "T1",
+      "w": 10,
+      "l": 16,
+      "h": 5,
+      "maxCapacity": 420
+    },
+    {
+      "id": "T2",
+      "w": 10,
+      "l": 14,
+      "h": 5,
+      "maxCapacity": 360
+    }
+  ],
+  "packages": [
+    {
+      "id": "P01",
+      "w": 4,
+      "l": 3,
+      "h": 4,
+      "value": 32,
+      "weight": 9,
+      "is_fragile": false,
+      "eta": 1
+    },
+    {
+      "id": "P02",
+      "w": 4,
+      "l": 6,
+      "h": 1,
+      "value": 149,
+      "weight": 18,
+      "is_fragile": true,
+      "eta": 6
+    },
+    {
+      "id": "P03",
+      "w": 5,
+      "l": 2,
+      "h": 2,
+      "value": 43,
+      "weight": 40,
+      "is_fragile": false,
+      "eta": 1
+    },
+    {
+      "id": "P04",
+      "w": 3,
+      "l": 6,
+      "h": 1,
+      "value": 121,
+      "weight": 8,
+      "is_fragile": false,
+      "eta": 0
+    },
+    {
+      "id": "P05",
+      "w": 6,
+      "l": 3,
+      "h": 3,
+      "value": 127,
+      "weight": 14,
+      "is_fragile": false,
+      "eta": 4
+    },
+    {
+      "id": "P06",
+      "w": 6,
+      "l": 3,
+      "h": 1,
+      "value": 68,
+      "weight": 28,
+      "is_fragile": true,
+      "eta": 1
+    },
+    {
+      "id": "P07",
+      "w": 6,
+      "l": 2,
+      "h": 2,
+      "value": 147,
+      "weight": 39,
+      "is_fragile": false,
+      "eta": 5
+    },
+    {
+      "id": "P08",
+      "w": 5,
+      "l": 6,
+      "h": 4,
+      "value": 112,
+      "weight": 24,
+      "is_fragile": false,
+      "eta": 2
+    },
+    {
+      "id": "P09",
+      "w": 3,
+      "l": 2,
+      "h": 3,
+      "value": 146,
+      "weight": 26,
+      "is_fragile": false,
+      "eta": 4
+    },
+    {
+      "id": "P10",
+      "w": 6,
+      "l": 2,
+      "h": 1,
+      "value": 127,
+      "weight": 15,
+      "is_fragile": false,
+      "eta": 2
+    },
+    {
+      "id": "P11",
+      "w": 5,
+      "l": 5,
+      "h": 1,
+      "value": 39,
+      "weight": 40,
+      "is_fragile": false,
+      "eta": 5
+    },
+    {
+      "id": "P12",
+      "w": 4,
+      "l": 4,
+      "h": 4,
+      "value": 136,
+      "weight": 9,
+      "is_fragile": false,
+      "eta": 4
+    },
+    {
+      "id": "P13",
+      "w": 5,
+      "l": 2,
+      "h": 1,
+      "value": 99,
+      "weight": 33,
+      "is_fragile": false,
+      "eta": 6
+    },
+    {
+      "id": "P14",
+      "w": 4,
+      "l": 2,
+      "h": 4,
+      "value": 110,
+      "weight": 15,
+      "is_fragile": false,
+      "eta": 7
+    },
+    {
+      "id": "P15",
+      "w": 2,
+      "l": 3,
+      "h": 3,
+      "value": 53,
+      "weight": 20,
+      "is_fragile": false,
+      "eta": 7
+    },
+    {
+      "id": "P16",
+      "w": 2,
+      "l": 3,
+      "h": 4,
+      "value": 122,
+      "weight": 40,
+      "is_fragile": false,
+      "eta": 2
+    },
+    {
+      "id": "P17",
+      "w": 5,
+      "l": 6,
+      "h": 3,
+      "value": 126,
+      "weight": 27,
+      "is_fragile": false,
+      "eta": 6
+    },
+    {
+      "id": "P18",
+      "w": 3,
+      "l": 3,
+      "h": 1,
+      "value": 65,
+      "weight": 14,
+      "is_fragile": false,
+      "eta": 3
+    },
+    {
+      "id": "P19",
+      "w": 2,
+      "l": 5,
+      "h": 2,
+      "value": 87,
+      "weight": 23,
+      "is_fragile": true,
+      "eta": 6
+    },
+    {
+      "id": "P20",
+      "w": 6,
+      "l": 4,
+      "h": 3,
+      "value": 52,
+      "weight": 37,
+      "is_fragile": false,
+      "eta": 0
+    },
+    {
+      "id": "P21",
+      "w": 5,
+      "l": 6,
+      "h": 4,
+      "value": 121,
+      "weight": 30,
+      "is_fragile": false,
+      "eta": 7
+    },
+    {
+      "id": "P22",
+      "w": 5,
+      "l": 2,
+      "h": 2,
+      "value": 37,
+      "weight": 18,
+      "is_fragile": false,
+      "eta": 1
+    },
+    {
+      "id": "P23",
+      "w": 4,
+      "l": 6,
+      "h": 1,
+      "value": 46,
+      "weight": 5,
+      "is_fragile": false,
+      "eta": 1
+    },
+    {
+      "id": "P24",
+      "w": 4,
+      "l": 6,
+      "h": 1,
+      "value": 38,
+      "weight": 18,
+      "is_fragile": false,
+      "eta": 2
+    },
+    {
+      "id": "P25",
+      "w": 4,
+      "l": 4,
+      "h": 3,
+      "value": 141,
+      "weight": 12,
+      "is_fragile": true,
+      "eta": 7
+    },
+    {
+      "id": "P26",
+      "w": 5,
+      "l": 5,
+      "h": 4,
+      "value": 99,
+      "weight": 10,
+      "is_fragile": true,
+      "eta": 5
+    },
+    {
+      "id": "P27",
+      "w": 4,
+      "l": 5,
+      "h": 2,
+      "value": 25,
+      "weight": 18,
+      "is_fragile": false,
+      "eta": 5
+    },
+    {
+      "id": "P28",
+      "w": 3,
+      "l": 6,
+      "h": 1,
+      "value": 96,
+      "weight": 10,
+      "is_fragile": false,
+      "eta": 4
+    },
+    {
+      "id": "P29",
+      "w": 6,
+      "l": 4,
+      "h": 2,
+      "value": 111,
+      "weight": 19,
+      "is_fragile": false,
+      "eta": 5
+    },
+    {
+      "id": "P30",
+      "w": 3,
+      "l": 6,
+      "h": 2,
+      "value": 81,
+      "weight": 30,
+      "is_fragile": false,
+      "eta": 3
+    },
+    {
+      "id": "P31",
+      "w": 4,
+      "l": 3,
+      "h": 4,
+      "value": 32,
+      "weight": 9,
+      "is_fragile": false,
+      "eta": 1
+    },
+    {
+      "id": "P32",
+      "w": 4,
+      "l": 6,
+      "h": 1,
+      "value": 149,
+      "weight": 18,
+      "is_fragile": true,
+      "eta": 6
+    },
+    {
+      "id": "P33",
+      "w": 5,
+      "l": 2,
+      "h": 2,
+      "value": 43,
+      "weight": 40,
+      "is_fragile": false,
+      "eta": 1
+    },
+    {
+      "id": "P34",
+      "w": 3,
+      "l": 6,
+      "h": 1,
+      "value": 121,
+      "weight": 8,
+      "is_fragile": false,
+      "eta": 0
+    },
+    {
+      "id": "P35",
+      "w": 6,
+      "l": 3,
+      "h": 3,
+      "value": 127,
+      "weight": 14,
+      "is_fragile": false,
+      "eta": 4
+    },
+    {
+      "id": "P36",
+      "w": 6,
+      "l": 3,
+      "h": 1,
+      "value": 68,
+      "weight": 28,
+      "is_fragile": true,
+      "eta": 1
+    },
+    {
+      "id": "P37",
+      "w": 6,
+      "l": 2,
+      "h": 2,
+      "value": 147,
+      "weight": 39,
+      "is_fragile": false,
+      "eta": 5
+    },
+    {
+      "id": "P38",
+      "w": 5,
+      "l": 6,
+      "h": 4,
+      "value": 112,
+      "weight": 24,
+      "is_fragile": false,
+      "eta": 2
+    },
+    {
+      "id": "P39",
+      "w": 3,
+      "l": 2,
+      "h": 3,
+      "value": 146,
+      "weight": 26,
+      "is_fragile": false,
+      "eta": 4
+    },
+    {
+      "id": "P40",
+      "w": 6,
+      "l": 2,
+      "h": 1,
+      "value": 127,
+      "weight": 15,
+      "is_fragile": false,
+      "eta": 2
+    },
+    {
+      "id": "P41",
+      "w": 5,
+      "l": 5,
+      "h": 1,
+      "value": 39,
+      "weight": 40,
+      "is_fragile": false,
+      "eta": 5
+    },
+    {
+      "id": "P42",
+      "w": 4,
+      "l": 4,
+      "h": 4,
+      "value": 136,
+      "weight": 9,
+      "is_fragile": false,
+      "eta": 4
+    },
+    {
+      "id": "P43",
+      "w": 5,
+      "l": 2,
+      "h": 1,
+      "value": 99,
+      "weight": 33,
+      "is_fragile": false,
+      "eta": 6
+    },
+    {
+      "id": "P44",
+      "w": 4,
+      "l": 2,
+      "h": 4,
+      "value": 110,
+      "weight": 15,
+      "is_fragile": false,
+      "eta": 7
+    },
+    {
+      "id": "P45",
+      "w": 2,
+      "l": 3,
+      "h": 3,
+      "value": 53,
+      "weight": 20,
+      "is_fragile": false,
+      "eta": 7
+    },
+    {
+      "id": "P46",
+      "w": 2,
+      "l": 3,
+      "h": 4,
+      "value": 122,
+      "weight": 40,
+      "is_fragile": false,
+      "eta": 2
+    },
+    {
+      "id": "P47",
+      "w": 5,
+      "l": 6,
+      "h": 3,
+      "value": 126,
+      "weight": 27,
+      "is_fragile": false,
+      "eta": 6
+    },
+    {
+      "id": "P48",
+      "w": 3,
+      "l": 3,
+      "h": 1,
+      "value": 65,
+      "weight": 14,
+      "is_fragile": false,
+      "eta": 3
+    },
+    {
+      "id": "P49",
+      "w": 2,
+      "l": 5,
+      "h": 2,
+      "value": 87,
+      "weight": 23,
+      "is_fragile": true,
+      "eta": 6
+    },
+    {
+      "id": "P50",
+      "w": 6,
+      "l": 4,
+      "h": 3,
+      "value": 52,
+      "weight": 37,
+      "is_fragile": false,
+      "eta": 0
+    }
+  ]
+}

@@ -31,6 +31,7 @@ def placements_to_dict(state):
                 "y": pos.y,
                 "z": pos.z,
                 "orientation": list(pos.orientation),
+                "truck_id": pos.truck_id,
             }
         )
         for pid, pos in state.placements.items()

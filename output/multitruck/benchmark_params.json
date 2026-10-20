@@ -1,0 +1,33 @@
+{
+  "input": "input/multitruck.json",
+  "packages": 50,
+  "package_source": "attributes cycled from input/sample_input.json, ids P01-P50",
+  "trucks": [
+    {"id": "T1", "w": 10, "l": 16, "h": 5, "maxCapacity": 420},
+    {"id": "T2", "w": 10, "l": 14, "h": 5, "maxCapacity": 360}
+  ],
+  "total_weight": 1128,
+  "total_value": 4717,
+  "total_capacity": 780,
+  "runs_per_configuration": 3,
+  "seed": 42,
+  "hill_climbing": {
+    "insert_tries": 8,
+    "steepest": {},
+    "sideways": {"max_sideways": 45, "consecutive": true},
+    "restart": {"max_restart": 6},
+    "stochastic": {"sample_size": 15, "max_no_improve": 5000}
+  },
+  "simulated_annealing": {
+    "objective": "base",
+    "alpha": 0.999895,
+    "t_min": 0.05,
+    "max_iter": 70000
+  },
+  "genetic_algorithm": {
+    "objective": "base",
+    "mutation_rate": 0.05,
+    "fixed_population": {"population_size": 20, "max_generations": [150, 400, 700]},
+    "fixed_iterations": {"max_generations": 400, "population_size": [10, 20, 35]}
+  }
+}

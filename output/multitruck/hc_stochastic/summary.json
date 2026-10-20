@@ -1,0 +1,1845 @@
+{
+  "params": {
+    "algorithm": "Hill-Climbing",
+    "variant": "stochastic",
+    "runs": 3,
+    "seed": 42,
+    "insert_tries": 8,
+    "sample_size": 15,
+    "max_no_improve": 5000
+  },
+  "runs": [
+    {
+      "run": 1,
+      "iterations": 5302,
+      "duration_s": 197.354,
+      "initial_value": 1369,
+      "final_value": 3460,
+      "best_value": 3460,
+      "initial_state": {
+        "P01": null,
+        "P02": null,
+        "P03": null,
+        "P04": {
+          "x": 2,
+          "y": 15,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P05": null,
+        "P06": null,
+        "P07": null,
+        "P08": null,
+        "P09": {
+          "x": 0,
+          "y": 10,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P10": null,
+        "P11": null,
+        "P12": null,
+        "P13": null,
+        "P14": {
+          "x": 3,
+          "y": 10,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P15": {
+          "x": 5,
+          "y": 11,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P16": {
+          "x": 3,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P17": null,
+        "P18": {
+          "x": 1,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P19": null,
+        "P20": null,
+        "P21": {
+          "x": 2,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P22": null,
+        "P23": null,
+        "P24": null,
+        "P25": {
+          "x": 1,
+          "y": 9,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P26": null,
+        "P27": null,
+        "P28": null,
+        "P29": null,
+        "P30": null,
+        "P31": null,
+        "P32": null,
+        "P33": null,
+        "P34": null,
+        "P35": {
+          "x": 7,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P36": null,
+        "P37": null,
+        "P38": null,
+        "P39": {
+          "x": 3,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P40": null,
+        "P41": {
+          "x": 0,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P42": null,
+        "P43": null,
+        "P44": null,
+        "P45": null,
+        "P46": null,
+        "P47": {
+          "x": 7,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P48": null,
+        "P49": null,
+        "P50": {
+          "x": 0,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        }
+      },
+      "final_state": {
+        "P01": null,
+        "P02": {
+          "x": 2,
+          "y": 15,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P03": {
+          "x": 2,
+          "y": 7,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P04": {
+          "x": 0,
+          "y": 1,
+          "z": 2,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P05": null,
+        "P06": {
+          "x": 1,
+          "y": 14,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P07": {
+          "x": 1,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P08": null,
+        "P09": {
+          "x": 0,
+          "y": 10,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P10": {
+          "x": 0,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P11": {
+          "x": 1,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P12": null,
+        "P13": {
+          "x": 1,
+          "y": 6,
+          "z": 4,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P14": {
+          "x": 3,
+          "y": 10,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P15": {
+          "x": 5,
+          "y": 11,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P16": {
+          "x": 3,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P17": null,
+        "P18": {
+          "x": 6,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P19": null,
+        "P20": null,
+        "P21": null,
+        "P22": null,
+        "P23": {
+          "x": 6,
+          "y": 5,
+          "z": 4,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P24": {
+          "x": 3,
+          "y": 8,
+          "z": 4,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P25": {
+          "x": 1,
+          "y": 9,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P26": null,
+        "P27": null,
+        "P28": {
+          "x": 0,
+          "y": 2,
+          "z": 2,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P29": {
+          "x": 0,
+          "y": 8,
+          "z": 2,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P30": {
+          "x": 7,
+          "y": 9,
+          "z": 2,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P31": null,
+        "P32": {
+          "x": 4,
+          "y": 1,
+          "z": 4,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P33": {
+          "x": 8,
+          "y": 12,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P34": {
+          "x": 4,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P35": {
+          "x": 7,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P36": null,
+        "P37": {
+          "x": 4,
+          "y": 8,
+          "z": 2,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P38": null,
+        "P39": {
+          "x": 3,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P40": {
+          "x": 0,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P41": null,
+        "P42": {
+          "x": 3,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P43": {
+          "x": 8,
+          "y": 3,
+          "z": 3,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P44": {
+          "x": 4,
+          "y": 1,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P45": {
+          "x": 4,
+          "y": 6,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P46": {
+          "x": 2,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P47": {
+          "x": 7,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P48": {
+          "x": 5,
+          "y": 11,
+          "z": 2,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P49": {
+          "x": 4,
+          "y": 5,
+          "z": 3,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P50": null
+      },
+      "sample_size": 15,
+      "max_no_improve": 5000
+    },
+    {
+      "run": 2,
+      "iterations": 5746,
+      "duration_s": 219.728,
+      "initial_value": 1350,
+      "final_value": 3488,
+      "best_value": 3488,
+      "initial_state": {
+        "P01": null,
+        "P02": null,
+        "P03": null,
+        "P04": null,
+        "P05": {
+          "x": 7,
+          "y": 1,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P06": null,
+        "P07": null,
+        "P08": null,
+        "P09": {
+          "x": 7,
+          "y": 7,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P10": null,
+        "P11": {
+          "x": 1,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P12": null,
+        "P13": null,
+        "P14": null,
+        "P15": {
+          "x": 2,
+          "y": 12,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P16": {
+          "x": 6,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P17": null,
+        "P18": {
+          "x": 0,
+          "y": 11,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P19": null,
+        "P20": null,
+        "P21": null,
+        "P22": null,
+        "P23": null,
+        "P24": null,
+        "P25": null,
+        "P26": null,
+        "P27": null,
+        "P28": null,
+        "P29": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P30": null,
+        "P31": null,
+        "P32": null,
+        "P33": {
+          "x": 4,
+          "y": 14,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P34": null,
+        "P35": null,
+        "P36": {
+          "x": 3,
+          "y": 6,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P37": null,
+        "P38": {
+          "x": 0,
+          "y": 10,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P39": {
+          "x": 7,
+          "y": 10,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P40": {
+          "x": 1,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P41": {
+          "x": 2,
+          "y": 5,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P42": null,
+        "P43": null,
+        "P44": null,
+        "P45": null,
+        "P46": null,
+        "P47": null,
+        "P48": {
+          "x": 0,
+          "y": 5,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P49": {
+          "x": 5,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P50": null
+      },
+      "final_state": {
+        "P01": null,
+        "P02": {
+          "x": 2,
+          "y": 2,
+          "z": 4,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P03": {
+          "x": 5,
+          "y": 4,
+          "z": 1,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P04": {
+          "x": 1,
+          "y": 8,
+          "z": 4,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P05": {
+          "x": 7,
+          "y": 1,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P06": {
+          "x": 1,
+          "y": 0,
+          "z": 2,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P07": {
+          "x": 1,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P08": null,
+        "P09": {
+          "x": 7,
+          "y": 7,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P10": {
+          "x": 8,
+          "y": 10,
+          "z": 3,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P11": null,
+        "P12": null,
+        "P13": {
+          "x": 3,
+          "y": 6,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P14": {
+          "x": 0,
+          "y": 5,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P15": {
+          "x": 0,
+          "y": 3,
+          "z": 2,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P16": {
+          "x": 6,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P17": null,
+        "P18": {
+          "x": 2,
+          "y": 5,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P19": {
+          "x": 0,
+          "y": 11,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P20": null,
+        "P21": null,
+        "P22": {
+          "x": 7,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P23": null,
+        "P24": null,
+        "P25": {
+          "x": 0,
+          "y": 10,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P26": null,
+        "P27": null,
+        "P28": {
+          "x": 0,
+          "y": 6,
+          "z": 3,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P29": {
+          "x": 4,
+          "y": 9,
+          "z": 2,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P30": null,
+        "P31": null,
+        "P32": {
+          "x": 4,
+          "y": 7,
+          "z": 3,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P33": {
+          "x": 4,
+          "y": 14,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P34": {
+          "x": 7,
+          "y": 1,
+          "z": 3,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P35": {
+          "x": 1,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P36": {
+          "x": 3,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P37": {
+          "x": 4,
+          "y": 7,
+          "z": 1,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P38": null,
+        "P39": {
+          "x": 7,
+          "y": 10,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P40": {
+          "x": 0,
+          "y": 4,
+          "z": 3,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P41": {
+          "x": 5,
+          "y": 9,
+          "z": 4,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P42": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P43": {
+          "x": 5,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P44": {
+          "x": 4,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P45": {
+          "x": 8,
+          "y": 6,
+          "z": 2,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P46": {
+          "x": 2,
+          "y": 12,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P47": null,
+        "P48": {
+          "x": 0,
+          "y": 5,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P49": {
+          "x": 5,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P50": null
+      },
+      "sample_size": 15,
+      "max_no_improve": 5000
+    },
+    {
+      "run": 3,
+      "iterations": 6540,
+      "duration_s": 260.13,
+      "initial_value": 1838,
+      "final_value": 3305,
+      "best_value": 3305,
+      "initial_state": {
+        "P01": null,
+        "P02": null,
+        "P03": null,
+        "P04": {
+          "x": 3,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P05": null,
+        "P06": null,
+        "P07": null,
+        "P08": null,
+        "P09": {
+          "x": 0,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P10": {
+          "x": 3,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P11": null,
+        "P12": {
+          "x": 1,
+          "y": 9,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P13": {
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P14": null,
+        "P15": {
+          "x": 6,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P16": {
+          "x": 7,
+          "y": 8,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P17": null,
+        "P18": {
+          "x": 1,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P19": {
+          "x": 6,
+          "y": 5,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P20": null,
+        "P21": null,
+        "P22": null,
+        "P23": null,
+        "P24": {
+          "x": 8,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P25": null,
+        "P26": null,
+        "P27": null,
+        "P28": null,
+        "P29": null,
+        "P30": null,
+        "P31": null,
+        "P32": null,
+        "P33": {
+          "x": 5,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P34": null,
+        "P35": null,
+        "P36": {
+          "x": 0,
+          "y": 6,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P37": {
+          "x": 0,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P38": null,
+        "P39": {
+          "x": 7,
+          "y": 8,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P40": {
+          "x": 0,
+          "y": 9,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P41": {
+          "x": 9,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P42": null,
+        "P43": {
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P44": null,
+        "P45": {
+          "x": 2,
+          "y": 7,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P46": {
+          "x": 1,
+          "y": 6,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P47": null,
+        "P48": null,
+        "P49": null,
+        "P50": null
+      },
+      "final_state": {
+        "P01": null,
+        "P02": {
+          "x": 3,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P03": {
+          "x": 2,
+          "y": 13,
+          "z": 3,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P04": {
+          "x": 1,
+          "y": 15,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P05": null,
+        "P06": {
+          "x": 9,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P07": {
+          "x": 0,
+          "y": 7,
+          "z": 3,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P08": null,
+        "P09": {
+          "x": 0,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P10": {
+          "x": 3,
+          "y": 13,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P11": {
+          "x": 4,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P12": {
+          "x": 1,
+          "y": 0,
+          "z": 1,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P13": {
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P14": {
+          "x": 1,
+          "y": 3,
+          "z": 2,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P15": {
+          "x": 6,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P16": {
+          "x": 7,
+          "y": 8,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P17": null,
+        "P18": {
+          "x": 1,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P19": {
+          "x": 6,
+          "y": 5,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P20": null,
+        "P21": null,
+        "P22": {
+          "x": 7,
+          "y": 5,
+          "z": 3,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P23": {
+          "x": 2,
+          "y": 11,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P24": {
+          "x": 9,
+          "y": 0,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P25": {
+          "x": 1,
+          "y": 9,
+          "z": 0,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P26": null,
+        "P27": null,
+        "P28": {
+          "x": 5,
+          "y": 4,
+          "z": 2,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P29": null,
+        "P30": {
+          "x": 2,
+          "y": 0,
+          "z": 2,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P31": null,
+        "P32": {
+          "x": 6,
+          "y": 4,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T1"
+        },
+        "P33": {
+          "x": 5,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "l",
+            "h",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P34": {
+          "x": 8,
+          "y": 2,
+          "z": 0,
+          "orientation": [
+            "h",
+            "l",
+            "w"
+          ],
+          "truck_id": "T2"
+        },
+        "P35": {
+          "x": 2,
+          "y": 8,
+          "z": 2,
+          "orientation": [
+            "w",
+            "l",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P36": {
+          "x": 0,
+          "y": 6,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P37": {
+          "x": 0,
+          "y": 3,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P38": null,
+        "P39": {
+          "x": 7,
+          "y": 8,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P40": {
+          "x": 0,
+          "y": 9,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P41": null,
+        "P42": null,
+        "P43": {
+          "x": 0,
+          "y": 1,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T1"
+        },
+        "P44": null,
+        "P45": {
+          "x": 2,
+          "y": 7,
+          "z": 0,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T1"
+        },
+        "P46": {
+          "x": 1,
+          "y": 6,
+          "z": 0,
+          "orientation": [
+            "h",
+            "w",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P47": null,
+        "P48": {
+          "x": 2,
+          "y": 12,
+          "z": 0,
+          "orientation": [
+            "w",
+            "h",
+            "l"
+          ],
+          "truck_id": "T2"
+        },
+        "P49": {
+          "x": 0,
+          "y": 5,
+          "z": 3,
+          "orientation": [
+            "l",
+            "w",
+            "h"
+          ],
+          "truck_id": "T2"
+        },
+        "P50": null
+      },
+      "sample_size": 15,
+      "max_no_improve": 5000
+    }
+  ]
+}
