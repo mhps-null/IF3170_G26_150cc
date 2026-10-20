@@ -22,6 +22,36 @@ class Truck:
     l: int
     h: int
     maxCapacity: int
+    id: str = "T1"
+
+
+@dataclass
+class Fleet:
+    """Satu atau beberapa truk. Satu truk tetap dinyatakan sebagai fleet."""
+
+    trucks: Dict[str, Truck]
+
+    def __post_init__(self):
+        if not self.trucks:
+            raise ValueError("Fleet harus berisi minimal satu truk.")
+
+    @classmethod
+    def from_list(cls, trucks: List[Truck]) -> "Fleet":
+        ids = [truck.id for truck in trucks]
+        if len(ids) != len(set(ids)):
+            raise ValueError("ID truk dalam satu fleet harus unik.")
+        return cls({truck.id: truck for truck in trucks})
+
+    def ids(self) -> List[str]:
+        return list(self.trucks)
+
+    def truck_for(self, pos: "PackagePlacement") -> Optional[Truck]:
+        """Truk pemilik sebuah penempatan. Fleet satu truk boleh tanpa truck_id."""
+        if pos.truck_id is not None:
+            return self.trucks.get(pos.truck_id)
+        if len(self.trucks) == 1:
+            return next(iter(self.trucks.values()))
+        return None
 
 def get_90deg_rotations(orientation: Tuple[str, str, str]) -> List[Tuple[str, str, str]]:
     """
@@ -36,11 +66,12 @@ def get_90deg_rotations(orientation: Tuple[str, str, str]) -> List[Tuple[str, st
 
 @dataclass
 class PackagePlacement:
-    """Class to store coordinate and orientation of a single package inside the truck"""
+    """Class to store coordinate and orientation of a single package inside a truck"""
     x: int
     y: int
     z: int
-    orientation: Tuple[str, str, str] 
+    orientation: Tuple[str, str, str]
+    truck_id: Optional[str] = None 
 
     def get_effective_dimensions(self, pkg: Package) -> Tuple[int, int, int]:
         dims = {'w': pkg.w, 'l': pkg.l, 'h': pkg.h}
@@ -71,8 +102,43 @@ class State:
                 total += package_catalog[pkg_id].value
         return total
     
+    def _boxes_in(self, fleet: Fleet, package_catalog: Dict[str, Package]):
+        """Kelompokkan paket yang sudah dimuat menurut truk. None jika ada truck_id asing."""
+        grouped = {truck_id: [] for truck_id in fleet.trucks}
+        for pkg_id, pos in self.placements.items():
+            if pos is None:
+                continue
+            truck = fleet.truck_for(pos)
+            if truck is None:
+                return None
+            pkg = package_catalog[pkg_id]
+            eff_x, eff_y, eff_z = pos.get_effective_dimensions(pkg)
+            grouped[truck.id].append({
+                'id': pkg_id,
+                'x1': pos.x, 'x2': pos.x + eff_x,
+                'y1': pos.y, 'y2': pos.y + eff_y,
+                'z1': pos.z, 'z2': pos.z + eff_z,
+                'is_fragile': pkg.is_fragile,
+                'weight': pkg.weight,
+            })
+        return grouped
+
+    def _support_levels(self, fleet: Fleet, package_catalog: Dict[str, Package], truck_id: str) -> List[int]:
+        truck = fleet.trucks[truck_id]
+        levels = {0}
+        for pkg_id, pos in self.placements.items():
+            if pos is None:
+                continue
+            owner = fleet.truck_for(pos)
+            if owner is None or owner.id != truck_id:
+                continue
+            _, _, eff_z = pos.get_effective_dimensions(package_catalog[pkg_id])
+            if pos.z + eff_z <= truck.h:
+                levels.add(pos.z + eff_z)
+        return list(levels)
+
     # Constraint Checking
-    def is_valid(self, truck: Truck, package_catalog: Dict[str, Package]) -> bool:
+    def is_valid(self, fleet: Fleet, package_catalog: Dict[str, Package]) -> bool:
         # Representasi harus mencakup semua paket, tanpa ID asing.
         if set(self.placements) != set(package_catalog):
             return False
@@ -100,68 +166,52 @@ class State:
             ):
                 return False
     
-        placed = []
-        total_weight = 0
-        
-        # Extract all package data inside the truck
-        for pkg_id, pos in self.placements.items():
-            if pos is not None:
-                pkg = package_catalog[pkg_id]
-                eff_x, eff_y, eff_z = pos.get_effective_dimensions(pkg)
-                placed.append({
-                    'id': pkg_id,
-                    'x1': pos.x, 'x2': pos.x + eff_x,
-                    'y1': pos.y, 'y2': pos.y + eff_y,
-                    'z1': pos.z, 'z2': pos.z + eff_z,
-                    'is_fragile': pkg.is_fragile
-                })
-                total_weight += pkg.weight
-                
-        # Check weight capacity
-        if total_weight > truck.maxCapacity:
+        grouped = self._boxes_in(fleet, package_catalog)
+        if grouped is None:
             return False
-            
-        for i, p1 in enumerate(placed):
-            # Check truck boundaries (Out of bounds)
-            if p1['x1'] < 0 or p1['x2'] > truck.w: return False
-            if p1['y1'] < 0 or p1['y2'] > truck.l: return False
-            if p1['z1'] < 0 or p1['z2'] > truck.h: return False
-            
-            # Check for overlapping packages
-            for j in range(i + 1, len(placed)):
-                p2 = placed[j]
-                overlap_x = max(p1['x1'], p2['x1']) < min(p1['x2'], p2['x2'])
-                overlap_y = max(p1['y1'], p2['y1']) < min(p1['y2'], p2['y2'])
-                overlap_z = max(p1['z1'], p2['z1']) < min(p1['z2'], p2['z2'])
-                
-                if overlap_x and overlap_y and overlap_z:
-                    return False
-                    
-            # Check floating and fragile support
-            if p1['z1'] > 0:
-                has_valid_support = False
-                for p2 in placed:
-                    if p1['id'] != p2['id']:
-                        if p2['z2'] == p1['z1']:
-                            # Check 2D base intersection
-                            overlap_x = max(p1['x1'], p2['x1']) < min(p1['x2'], p2['x2'])
-                            overlap_y = max(p1['y1'], p2['y1']) < min(p1['y2'], p2['y2'])
-                            
-                            if overlap_x and overlap_y:
-                                # If a fragile item is used as support, INVALID!
-                                if p2['is_fragile']:
-                                    return False 
-                                has_valid_support = True
-                                
-                if not has_valid_support:
-                    return False # Floating without valid support
-                    
+
+        for truck_id, placed in grouped.items():
+            truck = fleet.trucks[truck_id]
+            total_weight = sum(box['weight'] for box in placed)
+            if total_weight > truck.maxCapacity:
+                return False
+
+            for i, p1 in enumerate(placed):
+                if p1['x1'] < 0 or p1['x2'] > truck.w: return False
+                if p1['y1'] < 0 or p1['y2'] > truck.l: return False
+                if p1['z1'] < 0 or p1['z2'] > truck.h: return False
+
+                for j in range(i + 1, len(placed)):
+                    p2 = placed[j]
+                    overlap_x = max(p1['x1'], p2['x1']) < min(p1['x2'], p2['x2'])
+                    overlap_y = max(p1['y1'], p2['y1']) < min(p1['y2'], p2['y2'])
+                    overlap_z = max(p1['z1'], p2['z1']) < min(p1['z2'], p2['z2'])
+                    if overlap_x and overlap_y and overlap_z:
+                        return False
+
+                if p1['z1'] > 0:
+                    has_valid_support = False
+                    for p2 in placed:
+                        if p1['id'] == p2['id'] or p2['z2'] != p1['z1']:
+                            continue
+                        overlap_x = max(p1['x1'], p2['x1']) < min(p1['x2'], p2['x2'])
+                        overlap_y = max(p1['y1'], p2['y1']) < min(p1['y2'], p2['y2'])
+                        if overlap_x and overlap_y:
+                            if p2['is_fragile']:
+                                return False
+                            has_valid_support = True
+                    if not has_valid_support:
+                        return False
+
         return True
     
+    def _place(self, x, y, z, orientation, truck_id: str) -> PackagePlacement:
+        return PackagePlacement(x=x, y=y, z=z, orientation=orientation, truck_id=truck_id)
+
     # Neighbor Generation
     def generate_neighbors(
         self,
-        truck: Truck,
+        fleet: Fleet,
         package_catalog: Dict[str, Package],
         max_shift: int = 2,
         sample_size: int = None,
@@ -169,30 +219,40 @@ class State:
         max_sample_attempts: int = 100
     ) -> List['State']:
         """
-        if `sample_size` is given (Stochastic HC), samples actions randomly, 
-        otherwise (Steepest Ascent / Sideways Move), exhaustively enumerates all swaps, moves, 
+        if `sample_size` is given (Stochastic HC), samples actions randomly,
+        otherwise (Steepest Ascent / Sideways Move), exhaustively enumerates all swaps, moves,
         single-axis 90° rotations, and up to `insert_tries` insert candidates per outside package.
+        A fleet of several trucks also samples a transfer into another truck.
         """
         keys = list(self.placements.keys())
         inside_keys = [k for k in keys if self.placements[k] is not None]
         outside_keys = [k for k in keys if self.placements[k] is None]
-
-        valid_z = {0}
-        for pkg_id in inside_keys:
-            pos = self.placements[pkg_id]
-            pkg = package_catalog[pkg_id]
-            _, _, eff_z = pos.get_effective_dimensions(pkg)
-            if pos.z + eff_z <= truck.h:
-                valid_z.add(pos.z + eff_z)
-        z_list = list(valid_z)
+        truck_ids = fleet.ids()
 
         possible_orientations = [
-            ('w', 'l', 'h'), ('w', 'h', 'l'), 
-            ('l', 'w', 'h'), ('l', 'h', 'w'), 
+            ('w', 'l', 'h'), ('w', 'h', 'l'),
+            ('l', 'w', 'h'), ('l', 'h', 'w'),
             ('h', 'w', 'l'), ('h', 'l', 'w')
         ]
 
-        # Random sampling (for Stochastic HC)
+        def owner_of(pkg_id: str) -> Optional[Truck]:
+            pos = self.placements[pkg_id]
+            if pos is None:
+                return None
+            return fleet.truck_for(pos)
+
+        def random_slot(truck: Truck, pkg: Package, orientation):
+            ex, ey, ez = PackagePlacement(0, 0, 0, orientation).get_effective_dimensions(pkg)
+            if ex > truck.w or ey > truck.l or ez > truck.h:
+                return None
+            levels = self._support_levels(fleet, package_catalog, truck.id)
+            return (
+                random.randint(0, truck.w - ex),
+                random.randint(0, truck.l - ey),
+                random.choice(levels),
+            )
+
+        # Random sampling (for Stochastic HC and GA mutation)
         if sample_size is not None:
             available_actions = []
             if len(keys) >= 2 and not (len(inside_keys) == 0 and len(outside_keys) >= 2):
@@ -200,6 +260,8 @@ class State:
             if inside_keys:
                 available_actions.append('move')
                 available_actions.append('rotate')
+                if len(truck_ids) > 1:
+                    available_actions.append('transfer')
             if outside_keys:
                 available_actions.append('insert')
 
@@ -222,174 +284,188 @@ class State:
                 elif action == 'move':
                     pkg_id = random.choice(inside_keys)
                     pos = new_p[pkg_id]
+                    truck = owner_of(pkg_id)
+                    if truck is None:
+                        continue
                     pkg = package_catalog[pkg_id]
-                    eff_x, eff_y, eff_z = pos.get_effective_dimensions(pkg)
+                    eff_x, eff_y, _ = pos.get_effective_dimensions(pkg)
                     max_x = max(0, truck.w - eff_x)
                     max_y = max(0, truck.l - eff_y)
                     nx = max(0, min(max_x, pos.x + random.randint(-max_shift, max_shift)))
                     ny = max(0, min(max_y, pos.y + random.randint(-max_shift, max_shift)))
-                    nz = random.choice(z_list)
+                    nz = random.choice(self._support_levels(fleet, package_catalog, truck.id))
                     if (nx, ny, nz) == (pos.x, pos.y, pos.z):
                         continue
-                    new_p[pkg_id] = PackagePlacement(x=nx, y=ny, z=nz, orientation=pos.orientation)
+                    new_p[pkg_id] = self._place(nx, ny, nz, pos.orientation, truck.id)
 
                 elif action == 'rotate':
                     pkg_id = random.choice(inside_keys)
                     pos = new_p[pkg_id]
+                    truck = owner_of(pkg_id)
+                    if truck is None:
+                        continue
                     ori = random.choice(get_90deg_rotations(pos.orientation))
-                    new_p[pkg_id] = PackagePlacement(x=pos.x, y=pos.y, z=pos.z, orientation=ori)
+                    new_p[pkg_id] = self._place(pos.x, pos.y, pos.z, ori, truck.id)
 
                 elif action == 'insert':
                     pkg_id = random.choice(outside_keys)
-                    pkg = package_catalog[pkg_id]
+                    truck = fleet.trucks[random.choice(truck_ids)]
                     ori = random.choice(possible_orientations)
-                    ex, ey, ez = PackagePlacement(0, 0, 0, ori).get_effective_dimensions(pkg)
-                    if ex > truck.w or ey > truck.l or ez > truck.h:
+                    slot = random_slot(truck, package_catalog[pkg_id], ori)
+                    if slot is None:
                         continue
-                    nx = random.randint(0, truck.w - ex)
-                    ny = random.randint(0, truck.l - ey)
-                    nz = random.choice(z_list)
-                    new_p[pkg_id] = PackagePlacement(x=nx, y=ny, z=nz, orientation=ori)
+                    nx, ny, nz = slot
+                    new_p[pkg_id] = self._place(nx, ny, nz, ori, truck.id)
+
+                else:
+                    pkg_id = random.choice(inside_keys)
+                    origin = owner_of(pkg_id)
+                    if origin is None:
+                        continue
+                    destinations = [tid for tid in truck_ids if tid != origin.id]
+                    truck = fleet.trucks[random.choice(destinations)]
+                    ori = random.choice(possible_orientations)
+                    slot = random_slot(truck, package_catalog[pkg_id], ori)
+                    if slot is None:
+                        continue
+                    nx, ny, nz = slot
+                    new_p[pkg_id] = self._place(nx, ny, nz, ori, truck.id)
 
                 candidate = State(placements=new_p)
-                if candidate.is_valid(truck, package_catalog):
+                if candidate.is_valid(fleet, package_catalog):
                     neighbors.append(candidate)
 
             return neighbors
 
         # Exhaustive/semi-exhaustive neighborhood (for Steepest & Sideways)
         candidates = []
-        
-        # SWAP
+
         for i in range(len(keys)):
             for j in range(i + 1, len(keys)):
                 p1, p2 = keys[i], keys[j]
                 if self.placements[p1] is None and self.placements[p2] is None:
-                    continue # Both outside, no state change
-                
+                    continue
                 candidates.append(('swap', p1, p2))
-                
+
         for pkg_id in inside_keys:
             pos = self.placements[pkg_id]
-            # MOVE 
+            truck = owner_of(pkg_id)
+            if truck is None:
+                continue
+            levels = self._support_levels(fleet, package_catalog, truck.id)
             for nx in range(max(0, pos.x - max_shift), min(truck.w, pos.x + max_shift + 1)):
                 for ny in range(max(0, pos.y - max_shift), min(truck.l, pos.y + max_shift + 1)):
-                    for nz in valid_z:
+                    for nz in levels:
                         if nx != pos.x or ny != pos.y or nz != pos.z:
-                            candidates.append(('move', pkg_id, nx, ny, nz, pos.orientation))
-                            
-            # ROTATE
+                            candidates.append(('move', pkg_id, nx, ny, nz, pos.orientation, truck.id))
             for ori in get_90deg_rotations(pos.orientation):
-                candidates.append(('rotate', pkg_id, pos.x, pos.y, pos.z, ori))
+                candidates.append(('rotate', pkg_id, pos.x, pos.y, pos.z, ori, truck.id))
 
-        # INSERT
-        for pkg_id in outside_keys:
+        def queue_loads(pkg_id: str, destinations: List[str], kind: str):
             pkg = package_catalog[pkg_id]
-            seen_inserts = set()
-            for _ in range(insert_tries):
-                ori = random.choice(possible_orientations)
-                ex, ey, ez = PackagePlacement(0, 0, 0, ori).get_effective_dimensions(pkg)
-                if ex > truck.w or ey > truck.l or ez > truck.h:
+            seen = set()
+            for truck_id in destinations:
+                truck = fleet.trucks[truck_id]
+                for _ in range(insert_tries):
+                    ori = random.choice(possible_orientations)
+                    slot = random_slot(truck, pkg, ori)
+                    if slot is None:
+                        continue
+                    key = (pkg_id, truck_id, slot, ori)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    nx, ny, nz = slot
+                    candidates.append((kind, pkg_id, nx, ny, nz, ori, truck_id))
+
+        for pkg_id in outside_keys:
+            queue_loads(pkg_id, truck_ids, 'insert')
+        if len(truck_ids) > 1:
+            for pkg_id in inside_keys:
+                origin = owner_of(pkg_id)
+                if origin is None:
                     continue
-                nx = random.randint(0, truck.w - ex)
-                ny = random.randint(0, truck.l - ey)
-                nz = random.choice(z_list)
-                key = (pkg_id, nx, ny, nz, ori)
-                if key not in seen_inserts:
-                    seen_inserts.add(key)
-                    candidates.append(('insert', pkg_id, nx, ny, nz, ori))
-                    
+                queue_loads(pkg_id, [tid for tid in truck_ids if tid != origin.id], 'transfer')
+
         neighbors = []
         for instruction in candidates:
             new_p = self.copy_state().placements
-            
             if instruction[0] == 'swap':
                 _, p1, p2 = instruction
                 new_p[p1], new_p[p2] = new_p[p2], new_p[p1]
-            elif instruction[0] == 'move':
-                _, pkg_id, nx, ny, nz, ori = instruction
-                new_p[pkg_id] = PackagePlacement(x=nx, y=ny, z=nz, orientation=ori)
-            elif instruction[0] == 'rotate':
-                _, pkg_id, x, y, z, ori = instruction
-                new_p[pkg_id] = PackagePlacement(x=x, y=y, z=z, orientation=ori)
-            elif instruction[0] == 'insert':
-                _, pkg_id, nx, ny, nz, ori = instruction
-                new_p[pkg_id] = PackagePlacement(x=nx, y=ny, z=nz, orientation=ori)
-                
+            else:
+                _, pkg_id, x, y, z, ori, truck_id = instruction
+                new_p[pkg_id] = self._place(x, y, z, ori, truck_id)
             new_state = State(placements=new_p)
-            if new_state.is_valid(truck, package_catalog):
+            if new_state.is_valid(fleet, package_catalog):
                 neighbors.append(new_state)
-                
         return neighbors
 
-def generate_random_state(truck: Truck, package_catalog: Dict[str, Package]) -> State:
-    """Random initial state (floor)"""
-    # All package is outside of the truck
-    placements = {}
-    for pkg_id in package_catalog.keys(): 
-        placements[pkg_id] = None 
-    
+def generate_random_state(fleet: Fleet, package_catalog: Dict[str, Package]) -> State:
+    """Random initial state. Setiap paket dicoba ke lantai salah satu truk."""
+    placements = {pkg_id: None for pkg_id in package_catalog}
     initial_state = State(placements=placements)
-    
+
     all_pkg_ids = list(package_catalog.keys())
     random.shuffle(all_pkg_ids)
-    
-    # 6 possible orientations (w, l, h) mapped to X, Y, Z axes
     possible_orientations = [
-        ('w', 'l', 'h'), ('w', 'h', 'l'), 
-        ('l', 'w', 'h'), ('l', 'h', 'w'), 
+        ('w', 'l', 'h'), ('w', 'h', 'l'),
+        ('l', 'w', 'h'), ('l', 'h', 'w'),
         ('h', 'w', 'l'), ('h', 'l', 'w')
     ]
-    
-    # Try to place packages one by one randomly
-    for pkg_id in all_pkg_ids:
-        random_ori = random.choice(possible_orientations)
 
+    for pkg_id in all_pkg_ids:
         pkg = package_catalog[pkg_id]
-        temp_placement = PackagePlacement(x=0, y=0, z=0, orientation=random_ori)
-        eff_x, eff_y, eff_z = temp_placement.get_effective_dimensions(pkg)
-            
-        if eff_z > truck.h:
-            continue
-        max_x = max(0, truck.w - eff_x)
-        max_y = max(0, truck.l - eff_y)
-        
-        random_x = random.randint(0, max_x)
-        random_y = random.randint(0, max_y)
-        
-        # Create placement object
-        test_placement = PackagePlacement(
-            x=random_x, 
-            y=random_y, 
-            z=0, 
-            orientation=random_ori
-        )
-        
-        initial_state.placements[pkg_id] = test_placement
-        # Check if the placement is valid
-        if not initial_state.is_valid(truck, package_catalog):
+        truck_order = fleet.ids()
+        random.shuffle(truck_order)
+        for truck_id in truck_order:
+            truck = fleet.trucks[truck_id]
+            random_ori = random.choice(possible_orientations)
+            eff_x, eff_y, eff_z = PackagePlacement(0, 0, 0, random_ori).get_effective_dimensions(pkg)
+            if eff_x > truck.w or eff_y > truck.l or eff_z > truck.h:
+                continue
+            test_placement = PackagePlacement(
+                x=random.randint(0, truck.w - eff_x),
+                y=random.randint(0, truck.l - eff_y),
+                z=0,
+                orientation=random_ori,
+                truck_id=truck_id,
+            )
+            initial_state.placements[pkg_id] = test_placement
+            if initial_state.is_valid(fleet, package_catalog):
+                break
             initial_state.placements[pkg_id] = None
-            
+
     return initial_state
 
 
-def parse_input(filepath: str) -> Tuple[Truck, Dict[str, Package]]:
+def _truck_from_data(data: dict, index: int) -> Truck:
+    return Truck(
+        id=str(data.get("id", f"T{index}")),
+        w=data["w"],
+        l=data["l"],
+        h=data["h"],
+        maxCapacity=data["maxCapacity"],
+    )
+
+
+def parse_input(filepath: str) -> Tuple[Fleet, Dict[str, Package]]:
     """
-    Format:
-    {
-        "truck": {"w": 10, "l": 20, "h": 10, "maxCapacity": 100},
-        "packages": [
-            {"id": "P_A", "w": 5, "l": 5, "h": 5, "value": 100, "weight": 10, "is_fragile": false, "eta": 0},
-            {"id": "P_B", "w": 5, "l": 5, "h": 5, "value": 150, "weight": 10, "is_fragile": true, "eta": 0}
-        ]
-    }
+    Satu truk:
+        {"truck": {"w": 10, "l": 20, "h": 10, "maxCapacity": 100}, "packages": [...]}
+    Beberapa truk:
+        {"trucks": [{"id": "T1", "w": 10, "l": 20, "h": 5, "maxCapacity": 500}, ...], "packages": [...]}
     """
     with open(filepath, 'r') as f:
         data = json.load(f)
-        
-    t_data = data['truck']
-    truck = Truck(w=t_data['w'], l=t_data['l'], h=t_data['h'], maxCapacity=t_data['maxCapacity'])
-    
+
+    if "trucks" in data:
+        trucks = [_truck_from_data(item, i + 1) for i, item in enumerate(data["trucks"])]
+    elif "truck" in data:
+        trucks = [_truck_from_data(data["truck"], 1)]
+    else:
+        raise ValueError("Input harus memuat 'truck' atau 'trucks'.")
+
     catalog = {}
     for p_data in data['packages']:
         pkg = Package(
@@ -403,6 +479,6 @@ def parse_input(filepath: str) -> Tuple[Truck, Dict[str, Package]]:
             eta=p_data.get('eta', 0)
         )
         catalog[pkg.id] = pkg
-        
-    return truck, catalog
+
+    return Fleet.from_list(trucks), catalog
 

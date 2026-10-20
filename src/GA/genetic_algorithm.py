@@ -29,7 +29,7 @@ class GeneticAlgorithm:
         state: foundation.State
         fitness: float
 
-    truck: foundation.Truck
+    fleet: foundation.Fleet
     catalog: Dict[str, foundation.Package]
     objective_fn: Callable[[foundation.State], float]
     population_size: int
@@ -44,7 +44,7 @@ class GeneticAlgorithm:
                 "State harus memetakan seluruh paket dalam catalog."
             )
     
-        if not state.is_valid(self.truck, self.catalog):
+        if not state.is_valid(self.fleet, self.catalog):
             raise ValueError(
                 "GA tidak boleh mengevaluasi state yang melanggar constraint."
             )
@@ -53,7 +53,7 @@ class GeneticAlgorithm:
 
     def __init__(
         self,
-        truck: foundation.Truck,
+        fleet: foundation.Fleet,
         catalog: Dict[str, foundation.Package],
         objective_fn: Callable[[foundation.State], float],
         initial_population: List[foundation.State] = None,
@@ -62,7 +62,7 @@ class GeneticAlgorithm:
         max_generations: int = 200,
     ):
 
-        self.truck = truck
+        self.fleet = fleet
         self.catalog = catalog
         self.objective_fn = objective_fn
 
@@ -86,7 +86,7 @@ class GeneticAlgorithm:
         
             for _ in range(self.population_size):
                 state = foundation.generate_random_state(
-                    self.truck, self.catalog
+                    self.fleet, self.catalog
                 )
         
                 self.population.append(
@@ -156,7 +156,7 @@ class GeneticAlgorithm:
         child_state = foundation.State(placements=placements)
     
         # Jika hasil crossover valid, gunakan langsung.
-        if child_state.is_valid(self.truck, self.catalog):
+        if child_state.is_valid(self.fleet, self.catalog):
             return self.Individual(
                 state=child_state,
                 fitness=self._evaluate_fitness(child_state),
@@ -187,7 +187,7 @@ class GeneticAlgorithm:
             )
     
             # Tolak paket yang menyebabkan pelanggaran constraint.
-            if not partial_state.is_valid(self.truck, self.catalog):
+            if not partial_state.is_valid(self.fleet, self.catalog):
                 repaired_placements[pid] = None
     
         repaired_state = foundation.State(
@@ -195,7 +195,7 @@ class GeneticAlgorithm:
         )
     
         # Pemeriksaan akhir untuk menjaga invariant GA.
-        if not repaired_state.is_valid(self.truck, self.catalog):
+        if not repaired_state.is_valid(self.fleet, self.catalog):
             raise RuntimeError(
                 "Perbaikan crossover menghasilkan state tidak valid."
             )
@@ -207,7 +207,7 @@ class GeneticAlgorithm:
 
     def mutate(self, individual: Individual) -> Individual:
         neighbors = individual.state.generate_neighbors(
-            self.truck, self.catalog, sample_size=15
+            self.fleet, self.catalog, sample_size=15
         )
         if not neighbors:
             return self.Individual(
